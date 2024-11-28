@@ -1,5 +1,8 @@
 
 using DataAccess;
+using DataAccess.Interfaces;
+using DataAccess.Repositories;
+using Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebConnection
@@ -18,6 +21,11 @@ namespace WebConnection
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IGenericRepository<Family>, GenericRepository<Family>>();
+            builder.Services.AddScoped<IGenericRepository<CustomListItem>, GenericRepository<CustomListItem>>();
+            builder.Services.AddScoped<IGenericRepository<CustomList>, GenericRepository<CustomList>>();
+            builder.Services.AddScoped<IGenericRepository<Activity>, GenericRepository<Activity>>();
 
             var app = builder.Build();
 

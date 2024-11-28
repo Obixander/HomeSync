@@ -5,7 +5,7 @@
         private int userId;
         private string userName;
         private string password;
-
+        private string profilePhoto;
         public User()
         {
             
@@ -39,5 +39,7 @@
                 password = value;
             }
         }
+
+        public string ProfilePhoto { get => profilePhoto; set => profilePhoto = value; }
     }
 }
