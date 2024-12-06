@@ -42,6 +42,7 @@
 
     .ModalHeaderContainer i {
         font-size: 25px;
+        color: crimson;
     }
 
     .ModalHeaderContainer input {
@@ -51,11 +52,20 @@
 
     .ModalHeaderContainer i:hover {
         cursor: pointer;
-        color: red;
+        color: darkred;
     }
+
+.ModalHeaderIconContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 25%;
+    align-items: center;
+    margin-left: 0.5rem;
+}
 .dropdown {
     position: relative;
     display: inline-block;
+    width: 100%;
 }
 
 .dropdown-toggle {
@@ -76,7 +86,7 @@
     list-style: none;
     padding: 0;
     margin: 0;
-    width: 150px;
+    width: 184px;
     z-index: 1000;
 }
 
@@ -84,7 +94,10 @@
         padding: 10px;
         cursor: pointer;
     }
-
+.selected {
+    background-color: lightblue;
+    cursor: pointer;
+}
         .dropdown-menu li:hover {
             background-color: #f0f0f0;
         }

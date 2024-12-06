@@ -10,14 +10,14 @@
             <div class="ModalHeaderIconContainer">
                 <div class="dropdown">
                     <button class="dropdown-toggle" @onclick="ToggleDropdown">
-                        Select Members
+                        Select Member(s)
                     </button>
                     @if (isDropdownOpen)
                     {
                         <ul class="dropdown-menu">
                             @foreach (var member in FamilyMembers)
                             {
-                                <li @onclick="() => OnItemSelected(member)">@member</li>
+                                <li @onclick="() => OnItemSelected(member)" class="@(SelectedItems.Contains(member) ? "selected" : "")">@member.UserName</li>
                             }
                         </ul>
                     }
@@ -37,7 +37,7 @@
 </div>
 @code {
     private bool isDropdownOpen = false;
-    private List<User> SelectedItem = new() { };
+    private HashSet<User> SelectedItems = new() { };
     public Activity Activity { get; set; } = new();
 
     [Parameter]
@@ -47,6 +47,7 @@
     public EventCallback CloseModal { get; set; }
     private void Close()
     {
+        
         CloseModal.InvokeAsync(null);
     }
 
@@ -57,8 +58,13 @@
 
     private void OnItemSelected(User selectedItem)
     {
-        SelectedItem.Add(selectedItem);
-        
+        if (!SelectedItems.Contains(selectedItem)) {
+            SelectedItems.Add(selectedItem);        
+        }
+        else
+        {
+            SelectedItems.Remove(selectedItem);
+        }
     }
 
 }
