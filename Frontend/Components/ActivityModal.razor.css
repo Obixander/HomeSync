@@ -1,0 +1,50 @@
+﻿/*
+    Names in use
+    - Classes - 
+    ModalContainer
+    Modal
+    ModalHeaderContainer
+*/
+
+.ModalContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99; /* Ensure it’s on top */
+}
+
+.Modal {
+    position: relative;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%;
+    max-width: 600px;
+    max-height: 70%;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+}
+
+.ModalHeaderContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+    .ModalHeaderContainer i {
+        font-size: 20px;
+    }
+    .ModalHeaderContainer h3 {
+        margin-bottom: 0;
+    }
+
+    .ModalHeaderContainer i:hover {
+        cursor:pointer;
+        color: lawngreen;
+    }

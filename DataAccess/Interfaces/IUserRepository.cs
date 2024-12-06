@@ -4,7 +4,7 @@ namespace DataAccess.Interfaces
 {
     public interface IUserRepository : IGenericRepository<User>
     {
-        Task<bool> Login(string username,string password);
-        Task<bool> CreateUser(User user);
+        Task<User> Login(User user);
+        Task<string> CreateUser(User user);
     }
 }

@@ -1,0 +1,12 @@
+﻿@using Entities
+
+<div class="CardContainer">
+    <div class="CardTitleContainer">
+        <p>@Activity.Name</p>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Activity Activity { get; set; }
+}

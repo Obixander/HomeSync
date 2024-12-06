@@ -1,4 +1,6 @@
-﻿namespace Entities
+﻿using System.Text.Json.Serialization;
+
+namespace Entities
 {
     public class User
     {
@@ -6,9 +8,16 @@
         private string userName;
         private string password;
         private string profilePhoto;
+        private ICollection<Activity>? activities;
+        private int? familyId;  // Foreign key to Family (nullable)
+        private Family? family; // Navigation property
         public User()
         {
             
+        }
+        public User(int userId)
+        {
+            UserId = userId;
         }
         public User(string userName, string password)
         {
@@ -41,5 +50,9 @@
         }
 
         public string ProfilePhoto { get => profilePhoto; set => profilePhoto = value; }
+        public ICollection<Activity>? Activities { get => activities; set => activities = value; }
+        public int? FamilyId { get => familyId; set => familyId = value; }
+        [JsonIgnore]
+        public Family? Family { get => family; set => family = value; }
     }
 }

@@ -1,0 +1,114 @@
+﻿@page "/mainpage"
+@rendermode InteractiveWebAssembly
+@using Entities
+@using Microsoft.AspNetCore.SignalR.Client
+@using Services
+@using System.Globalization
+@using Website.Client.Data
+@inject NavigationManager Navigation
+@inject SignalRService hub
+@inject SessionToken Token
+
+@if (activities != null)
+{
+    <div>Week: @WeekNumber</div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Time</th> <!-- Header for Time Column -->
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var timeSlot in timeSlots)
+            {
+                <tr>
+                    <td>@timeSlot</td>  <!-- Time Slot in the first column -->
+                    @foreach (var day in weekdays)
+                    {
+                        <td>
+                            @* Check if any activity starts at this day and time slot *@
+                            @foreach (var activity in activities)
+                            {
+                                // Check if activity falls within this time slot and day
+                                if (activity.StartDate.DayOfWeek.ToString() == day && activity.StartDate.ToString("HH" + ":00") == timeSlot)
+                                {
+                                    <p>test</p>
+                                } //okay this is weird this point is reached twice as expected it doesn't do anything which is wrong but it still displayes the data as if
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    private Calendar calendar;
+    private int weekNumber;
+    public int WeekNumber 
+    { 
+        get
+        {
+            return weekNumber;
+        }
+        set
+        {
+            weekNumber = value;
+            Console.WriteLine("Week Number is " + WeekNumber);
+        }
+    }
+    private List<Activity> activities = new();
+    private List<string> weekdays = new List<string> //problely not the best way to handle this but hey it works for now
+    {
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    };
+
+    // Define a list of time slots 
+    private List<string> timeSlots = new List<string> //problely not the best way to handle this but hey it works for now
+    {
+        "00:00","01:00","02:00","03:00","04:00","05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00","21:00","22:00","23:00",
+    };
+    protected async override Task OnInitializedAsync()
+    {
+        if (hub.HubConnection.State == HubConnectionState.Connected)
+        {
+            calendar = new CultureInfo("da-dk").Calendar;
+            WeekNumber = calendar.GetWeekOfYear(DateTime.UtcNow, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+            activities.Add(new Activity("Test1111", DateTime.Now, DateTime.UtcNow.AddHours(1), 0));
+            activities.Add(new Activity("Test2222", DateTime.Now.AddHours(1), DateTime.UtcNow.AddHours(2), 0));
+            StateHasChanged();
+            await base.OnInitializedAsync();
+        }   
+        else
+        {
+            await hub.StartConnectionAsync();
+        }
+    }
+
+    // protected override void OnAfterRender(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         if (Token.CurrentAccount.UserId <= 0)
+    //         {
+    //             //Navigation.NavigateTo("/");
+    //         }
+    //         StateHasChanged();
+    //     }
+    //     if (activities == null)
+    //     {
+    //         activities = new();
+    //         activities.Add(new Activity("Test1", DateTime.Now, DateTime.UtcNow.AddHours(1), 0));
+    //         activities.Add(new Activity("Test2", DateTime.Now.AddHours(1), DateTime.UtcNow.AddHours(2), 0));
+    //     }
+    // }
+}

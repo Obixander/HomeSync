@@ -1,9 +1,36 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Components\ActivityCard.razor.css" />
+    <None Remove="Components\ActivityModal.razor.css" />
+    <None Remove="Components\CreateActivityModal.razor.css" />
+    <None Remove="Pages\LoginPage.razor.css" />
+    <None Remove="Pages\MainPage.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Components\ActivityCard.razor.css" />
+    <Content Include="Components\ActivityModal.razor.css" />
+    <Content Include="Components\CreateActivityModal.razor.css" />
+    <Content Include="Pages\LoginPage.razor.css" />
+    <Content Include="Pages\MainPage.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.3" PrivateAssets="all" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Entities\Entities.csproj" />
+    <ProjectReference Include="..\Services\Services.csproj" />
+  </ItemGroup>
 
 </Project>

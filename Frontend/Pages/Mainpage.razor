@@ -1,0 +1,192 @@
+﻿@page "/mainpage"
+@* @rendermode InteractiveWebAssemblyRenderMode *@
+@using Entities
+@using Frontend.Components
+@using Microsoft.AspNetCore.SignalR.Client
+@using Newtonsoft.Json
+@using Services
+@using System.Globalization
+@using Frontend.Data
+@inject NavigationManager Navigation
+@inject SignalRService hub
+@inject SessionToken Token
+
+@if (activities != null)
+{
+    <div>Week: @WeekNumber</div>
+    <table class="table table-bordered">
+        <thead>
+            <tr class="TableHeaderContainer">
+                <th><button @onclick="() => CreateActivity()">Add Activity</button></th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var timeSlot in timeSlots)
+            {
+                <tr>
+                    <td>@timeSlot</td>
+                    @foreach (var day in weekdays)
+                    {
+                        <td>
+                            <!-- Set relative position for stacking -->
+                            @{
+                                // Find activities for this timeslot and day
+                                var activitiesInThisSlot = activities.Where(activity => activity.StartDate.DayOfWeek.ToString() == day && activity.StartDate.ToString("HH") == timeSlot.Split(":")[0]).ToList();
+
+                                // Calculate overlap positions dynamically
+                                var maxOverlap = activitiesInThisSlot.Count;
+                                string activityWidth = "";
+                                if (maxOverlap != 0)
+                                {
+                                    activityWidth = (100 / maxOverlap).ToString();
+                                }
+                                else
+                                {
+                                    activityWidth = "100";
+                                }
+                                activityWidth += "%";
+                                int index = 0;
+                            }
+
+                            @foreach (var activity in activitiesInThisSlot)
+                            {
+                                // Calculate duration and offset
+                                var durationInHours = (activity.EndDate - activity.StartDate).TotalHours;
+                                string height = ((int)durationInHours * 60).ToString() + "px"; // each <td> is 60px which means 1 px is 1 minute
+                                string marginTop = activity.StartDate.Minute.ToString() + "px"; // Minutes to pixels for start offset
+                                string leftOffset = (index * int.Parse(activityWidth.Split("%")[0])).ToString() + "%"; // Horizontal positioning
+                               
+                                <div class="activity-card"
+                                     style="
+                                        height:@height; margin-top:@marginTop;
+                                        width:@activityWidth;
+                                        left:@leftOffset;"
+                                     @onclick="() => CardPressed(activity)">
+                                    <ActivityCard Activity="@activity"></ActivityCard>
+                                </div>
+
+                                index++; // Increment for next overlapping activity
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+    @if (isModalVisible)
+    {
+        <ActivityModal Activity="@clickedActivity" CloseModal="CloseModal"></ActivityModal>
+    }
+    @if (isCreateModalVisible)
+    {
+        <CreateActivityModal FamilyMembers="@family.Members" CloseModal="CloseCreation"></CreateActivityModal>
+    }
+}
+
+@code {
+    private bool isCreateModalVisible = false;
+    private bool isModalVisible = false;
+
+    private Activity clickedActivity = null;
+    private Calendar calendar;
+    private int weekNumber;
+    public int WeekNumber
+    {
+        get
+        {
+            return weekNumber;
+        }
+        set
+        {
+            weekNumber = value;
+            // Console.WriteLine("Week Number is " + WeekNumber);
+        }
+    }
+
+
+    private Family family;
+    private List<Activity> activities = new();
+
+    private List<string> weekdays = new List<string> //problely not the best way to handle this but hey it works for now
+    {
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    };
+    private List<string> timeSlots = new List<string> //problely not the best way to handle this but hey it works for now
+    {
+        "00:00","01:00","02:00","03:00","04:00","05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00","21:00","22:00","23:00",
+    };
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (hub.HubConnection.State == HubConnectionState.Connected)
+        {
+            calendar = new CultureInfo("da-dk").Calendar;
+            WeekNumber = calendar.GetWeekOfYear(DateTime.UtcNow, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+            // activities.Add(new Activity("Take out the Trash", DateTime.Now, DateTime.Now.AddHours(4), 0));
+            // activities.Add(new Activity("get grocercies from Rema 1000", DateTime.Now.AddMinutes(30), DateTime.Now.AddHours(4), 0));
+            // activities.Add(new Activity("Clean Room", DateTime.Now.AddHours(1), DateTime.Now.AddHours(4), 0));
+            // activities.Add(new Activity("Eat Food", DateTime.Now.AddHours(4), DateTime.Now.AddHours(5), 0));
+            activities = await hub.HubConnection.InvokeAsync<List<Activity>>("GetAllActivities", Token.CurrentAccount.FamilyId);
+            family = await hub.HubConnection.InvokeAsync<Family>("GetFamily", Token.CurrentAccount.FamilyId) ?? throw new ArgumentNullException();
+            hub.HubConnection.On<Activity> ("ActivityAdded", async Event =>
+            {
+                if (!activities.Contains(Event))
+                {
+                    activities.Add(Event);
+                    await InvokeAsync(StateHasChanged);
+                }
+            });
+            await InvokeAsync(StateHasChanged);
+            await base.OnInitializedAsync();
+        }
+        else
+        {
+            await hub.StartConnectionAsync();
+            if (hub.HubConnection.State == HubConnectionState.Connected)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+
+    public void CreateActivity()
+    {
+        isCreateModalVisible = true;
+    }
+
+    public void CardPressed(Activity activity)
+    {
+        Console.WriteLine("Card: " + activity.Name + " was pressed");
+        isModalVisible = true;
+        clickedActivity = activity;
+    }
+    private void CloseModal()
+    {
+        isModalVisible = false;
+        clickedActivity = null; // Optionally clear the activity
+    }
+    private void CloseCreation() 
+    {
+        isCreateModalVisible = false;   
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (Token.CurrentAccount.UserId <= 0)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+
+}

@@ -1,0 +1,60 @@
+﻿/* 
+    Names in use
+    - Classes -
+TableHeaderContainer
+*/
+
+.table {
+    width: 75% !important;
+}
+
+.TableHeaderContainer {
+}
+.TableHeaderContainer th {
+    text-align: center;
+    width: 230px;
+}
+    .TableHeaderContainer th:first-of-type {
+        text-align: center;
+        width: 130px;
+    }
+
+/*td {
+    position: relative;
+    height: 60px;*/ /* Adjust height based on your design */
+/*}
+
+.activity-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    z-index: 1;
+}
+
+    .activity-card + .activity-card {
+        z-index: 2;
+    }*/
+
+td {
+    position: relative;
+    height: 60px; /* Set a standard height for timeslots */
+}
+
+.activity-card {
+    position: absolute;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 5px;
+    box-sizing: border-box;
+    overflow: hidden;
+    z-index: 1;
+    transition: all 0.2s ease; /* Optional: smooth hover effect */
+}
+
+    .activity-card:hover {
+        background-color: #d0e6ff; /* Optional: Highlight on hover */
+    }

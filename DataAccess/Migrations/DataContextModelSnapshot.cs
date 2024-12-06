@@ -22,6 +22,21 @@ namespace DataAccess.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ActivityUser", b =>
+                {
+                    b.Property<int>("ActivitiesActivityId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AssignedMembersUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ActivitiesActivityId", "AssignedMembersUserId");
+
+                    b.HasIndex("AssignedMembersUserId");
+
+                    b.ToTable("ActivityUser");
+                });
+
             modelBuilder.Entity("Entities.Activity", b =>
                 {
                     b.Property<int>("ActivityId")
@@ -37,7 +52,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("FamilyId")
+                    b.Property<int>("FamilyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -120,7 +135,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("FamilyId");
 
-                    b.ToTable("families");
+                    b.ToTable("Families");
                 });
 
             modelBuilder.Entity("Entities.User", b =>
@@ -131,13 +146,14 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
-                    b.Property<int?>("ActivityId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("FamilyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfilePhoto")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -147,18 +163,33 @@ namespace DataAccess.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("ActivityId");
-
                     b.HasIndex("FamilyId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ActivityUser", b =>
+                {
+                    b.HasOne("Entities.Activity", null)
+                        .WithMany()
+                        .HasForeignKey("ActivitiesActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("AssignedMembersUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Entities.Activity", b =>
                 {
                     b.HasOne("Entities.Family", null)
                         .WithMany("Activities")
-                        .HasForeignKey("FamilyId");
+                        .HasForeignKey("FamilyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Entities.CustomList", b =>
@@ -177,18 +208,11 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Entities.User", b =>
                 {
-                    b.HasOne("Entities.Activity", null)
-                        .WithMany("AssignedMembers")
-                        .HasForeignKey("ActivityId");
-
-                    b.HasOne("Entities.Family", null)
+                    b.HasOne("Entities.Family", "Family")
                         .WithMany("Members")
                         .HasForeignKey("FamilyId");
-                });
 
-            modelBuilder.Entity("Entities.Activity", b =>
-                {
-                    b.Navigation("AssignedMembers");
+                    b.Navigation("Family");
                 });
 
             modelBuilder.Entity("Entities.CustomList", b =>

@@ -13,11 +13,17 @@ namespace DataAccess
         public DbSet<Activity> Activities { get; set; } = null;
         public DbSet<CustomListItem> CustomListItems { get; set; } = null;
         public DbSet<CustomList> CustomLists { get; set; } = null;
-        public DbSet<Family> families { get; set; } = null;
-
-
+        public DbSet<Family> Families { get; set; } = null;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //modelBuilder.Entity<Activity>()
+            //    .HasMany(e => e.AssignedMembers)
+            //    .WithMany(e => e.Activities)
+            //    .UsingEntity(
+            //    "ActivityUsers",
+            //    l => l.HasOne(typeof(User)).WithMany().HasForeignKey("UserId").HasPrincipalKey(nameof(User.UserId)),
+            //    r => r.HasOne(typeof(Activity)).WithMany().HasForeignKey("ActivityId").HasPrincipalKey(nameof(Activity.ActivityId)),
+            //    j => j.HasKey("UserId", "ActivityId"));
         }
 
     }

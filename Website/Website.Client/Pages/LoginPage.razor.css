@@ -1,0 +1,39 @@
+﻿/*
+    Class Names in use
+    Container
+    LoginContainer
+    LoginContainerElement
+*/
+.Container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.LoginContainer {
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 1px 20px 5px #000000;
+    width: 15rem;
+    height: 13rem;
+}
+
+    .LoginContainer button {
+        width: 10rem;
+        margin: 1rem auto;
+    }
+
+.LoginContainerElement {
+    width: 100%;
+    padding: 5px;
+}
+
+    .LoginContainerElement input {
+        width: 100%;
+    }
+
+    .LoginContainerElement p {
+        margin-bottom: 0.5rem !important; 
+    }

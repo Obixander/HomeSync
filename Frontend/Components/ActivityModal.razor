@@ -1,0 +1,32 @@
+﻿@using Entities
+
+    @*Will be used to set the width to the fullscreen and the transparet background*@
+<div class="ModalContainer" @onclick="Close">
+
+    @*Will be used for the actual modal*@
+    <div class="Modal" @onclick:stopPropagation>
+        <div class="ModalHeaderContainer">
+            <h3>@Activity.Name</h3>
+            <i class="fa-solid fa-pen"></i>
+        </div>
+        <hr />
+        @if (Activity.Description != null)
+        {
+            <p>@Activity.Description</p>
+        }
+        <p>@Activity.StartDate</p>
+        <p>@Activity.EndDate</p>
+
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Activity Activity { get; set; }
+    [Parameter]
+    public EventCallback CloseModal { get; set; }
+    private void Close()
+    {
+        CloseModal.InvokeAsync(null);
+    }
+}

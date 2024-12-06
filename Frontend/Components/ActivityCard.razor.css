@@ -1,0 +1,15 @@
+﻿/*
+    Names in Use
+    - Classes -
+    CardContainer
+    
+*/
+
+/*.CardContainer {
+    display: flex;
+    justify-content: center;
+}*/
+
+.CardTitleContainer p{
+    text-align: center;
+}

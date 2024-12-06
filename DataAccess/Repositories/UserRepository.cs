@@ -1,9 +1,11 @@
-﻿using DataAccess.Interfaces;
+﻿using Azure.Core;
+using DataAccess.Interfaces;
 using Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,27 +13,40 @@ namespace DataAccess.Repositories
 {
     public class UserRepository(DataContext context) : GenericRepository<User>(context), IUserRepository
     {
-        public async Task<bool> CreateUser(User user)
+        public async Task<string> CreateUser(User user)
         {
-            if (await context.FindAsync<User>(user) != null)
+            try
             {
-                return false;
+                if (context.Users.Any(g => g.UserName == user.UserName))
+                {
+                    return "An Error has occured this username is already in use";
+                }
+                await context.AddAsync(user);
+                await context.SaveChangesAsync();
+                return "Succes the user has been created";
             }
-            await context.AddAsync(user);
-            await context.SaveChangesAsync();
-            return true;
+            catch
+            {
+                throw;
+            }
         }
 
-        public async Task<bool> Login(string username, string password)
+        public async Task<User> Login(User user)
         {
-            if(await context.Users.FirstOrDefaultAsync(x => x.UserName == username && x.Password == password) != null)
+            try
             {
-                return true;
+                if (await context.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName && x.Password == user.Password) != null)
+                {
+                    //this findasync dont work fix after break
+                    return await context.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName && x.Password == user.Password) ?? throw new NullReferenceException("if this happends something has gone very very wrong :C");
+                }
+                throw new NullReferenceException();
             }
-            return false;
+            catch
+            {
+                throw;
+            }
         }
-
-
 
     }
 }

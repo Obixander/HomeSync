@@ -1,0 +1,64 @@
+﻿@using Entities
+
+@*Will be used to set the width to the fullscreen and the transparet background*@
+<div class="ModalContainer" >
+
+    @*Will be used for the actual modal*@
+    <div class="Modal" @onclick:stopPropagation>
+        <div class="ModalHeaderContainer">
+            <input @bind="@Activity.Name"/>
+            <div class="ModalHeaderIconContainer">
+                <div class="dropdown">
+                    <button class="dropdown-toggle" @onclick="ToggleDropdown">
+                        Select Members
+                    </button>
+                    @if (isDropdownOpen)
+                    {
+                        <ul class="dropdown-menu">
+                            @foreach (var member in FamilyMembers)
+                            {
+                                <li @onclick="() => OnItemSelected(member)">@member</li>
+                            }
+                        </ul>
+                    }
+                </div>
+                <i class="fa-solid fa-x" @onclick="Close"></i>
+            </div>
+        </div>
+        <hr />
+        @if (Activity.Description != null)
+        {
+            <p>@Activity.Description</p>
+        }
+        <p>@Activity.StartDate</p>
+        <p>@Activity.EndDate</p>
+
+    </div>
+</div>
+@code {
+    private bool isDropdownOpen = false;
+    private List<User> SelectedItem = new() { };
+    public Activity Activity { get; set; } = new();
+
+    [Parameter]
+    public List<User> FamilyMembers { get; set; }
+
+    [Parameter]
+    public EventCallback CloseModal { get; set; }
+    private void Close()
+    {
+        CloseModal.InvokeAsync(null);
+    }
+
+    private void ToggleDropdown()
+    {
+        isDropdownOpen = !isDropdownOpen;
+    }
+
+    private void OnItemSelected(User selectedItem)
+    {
+        SelectedItem.Add(selectedItem);
+        
+    }
+
+}

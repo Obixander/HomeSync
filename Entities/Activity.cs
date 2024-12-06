@@ -20,9 +20,9 @@ namespace Entities
         private DateTime startDate;
         private DateTime endDate;
         private string description;
-        private List<User>? assignedMembers;
+        private ICollection<User>? assignedMembers; 
         private StatusOfActivity status;
-
+        private int familyId;
         public Activity()
         {
             
@@ -39,7 +39,8 @@ namespace Entities
         public DateTime StartDate { get => startDate; set => startDate = value; }
         public DateTime EndDate { get => endDate; set => endDate = value; }
         public string Description { get => description; set => description = value; }
-        public List<User>? AssignedMembers { get => assignedMembers; set => assignedMembers = value; }
+        public ICollection<User>? AssignedMembers { get => assignedMembers; set => assignedMembers = value; }
         public StatusOfActivity Status { get => status; set => status = value; }
+        public int FamilyId { get => familyId; set => familyId = value; }
     }
 }

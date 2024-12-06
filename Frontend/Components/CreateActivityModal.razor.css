@@ -1,0 +1,90 @@
+﻿/*
+    Names in use
+    - Classes - 
+    ModalContainer
+    Modal
+    ModalHeaderContainer
+    ModalHeaderIconContainer
+*/
+
+.ModalContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99; /* Ensure it’s on top */
+}
+
+.Modal {
+    height: 70%;
+    position: relative;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 1200px;
+    max-height: 70%;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+}
+
+.ModalHeaderContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .ModalHeaderContainer i {
+        font-size: 25px;
+    }
+
+    .ModalHeaderContainer input {
+        height: 40px;
+        width: 75%;
+    }
+
+    .ModalHeaderContainer i:hover {
+        cursor: pointer;
+        color: red;
+    }
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 150px;
+    z-index: 1000;
+}
+
+    .dropdown-menu li {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+        .dropdown-menu li:hover {
+            background-color: #f0f0f0;
+        }
