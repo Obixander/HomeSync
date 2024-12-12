@@ -7,7 +7,7 @@ namespace WebConnection.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActivityController(IGenericRepository<Activity> repository) : ControllerBase
+    public class ActivityController(IActivityRepository repository) : ControllerBase
     {
         [HttpPost]
         public async Task<ActionResult> Post(Activity entity)

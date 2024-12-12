@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241204104423_UpdatedUserFamilyIdAgain")]
-    partial class UpdatedUserFamilyIdAgain
+    [Migration("20241210093411_run3")]
+    partial class run3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -49,7 +49,6 @@ namespace DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ActivityId"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndDate")
@@ -211,9 +210,11 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Entities.User", b =>
                 {
-                    b.HasOne("Entities.Family", null)
+                    b.HasOne("Entities.Family", "Family")
                         .WithMany("Members")
                         .HasForeignKey("FamilyId");
+
+                    b.Navigation("Family");
                 });
 
             modelBuilder.Entity("Entities.CustomList", b =>

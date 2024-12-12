@@ -7,7 +7,7 @@ namespace WebConnection.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FamilyController(IGenericRepository<Family> repository) : ControllerBase
+    public class FamilyController(IFamilyRepository repository) : ControllerBase
     {
 
         [HttpPost]

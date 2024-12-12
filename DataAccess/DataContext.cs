@@ -16,6 +16,12 @@ namespace DataAccess
         public DbSet<Family> Families { get; set; } = null;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Activity>()
+                .HasMany(a => a.AssignedMembers)
+                .WithMany(u => u.Activities);
+
+            modelBuilder.Entity<User>().HasMany(u => u.Activities).WithMany(a => a.AssignedMembers);
+
             //modelBuilder.Entity<Activity>()
             //    .HasMany(e => e.AssignedMembers)
             //    .WithMany(e => e.Activities)

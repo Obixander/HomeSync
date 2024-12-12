@@ -1,12 +1,15 @@
 ﻿@using Entities
-
+@using Frontend.Data
+@using Services
+@inject SignalRService hub
+@inject SessionToken token
 @*Will be used to set the width to the fullscreen and the transparet background*@
-<div class="ModalContainer" >
+<div class="ModalContainer">
 
     @*Will be used for the actual modal*@
     <div class="Modal" @onclick:stopPropagation>
         <div class="ModalHeaderContainer">
-            <input @bind="@Activity.Name"/>
+            <input @bind="@Activity.Name" />
             <div class="ModalHeaderIconContainer">
                 <div class="dropdown">
                     <button class="dropdown-toggle" @onclick="ToggleDropdown">
@@ -22,33 +25,125 @@
                         </ul>
                     }
                 </div>
+                <select class="form-select" @bind="Activity.Status">
+                    <option>@StatusOfActivity.Pending</option>
+                    <option>@StatusOfActivity.Active</option>
+                    <option>@StatusOfActivity.Completed</option>
+                    <option>@StatusOfActivity.Cancelled</option>
+                </select>
                 <i class="fa-solid fa-x" @onclick="Close"></i>
             </div>
         </div>
         <hr />
-        @if (Activity.Description != null)
-        {
-            <p>@Activity.Description</p>
-        }
-        <p>@Activity.StartDate</p>
-        <p>@Activity.EndDate</p>
+        <div class="ModalTimeSelectionContainer">
+            <div class="ModalTimeSelectionElement">
+                <div>
+                    <h4>Start Date</h4>
+                    <input type="date" @bind="@startDate" />
+                    <input type="time" @bind="@startTime" />
+                </div>
+            </div>
+            <div class="ModalTimeSelectionElementCenter">
+                ---
+            </div>
+            <div class="ModalTimeSelectionElement">
+                <div>
+                    <h4>End Date</h4>
+                    <input type="date" @bind="@endDate" />
+                    <input type="time" @bind="@endTime" />
+                </div>
+            </div>
 
+        </div>
+        <hr />
+        <div class="ModalDescriptionContainer">
+            <h3>
+                Description
+            </h3>
+            <textarea @bind="@Activity.Description" placeholder="A Description is Optional">
+                
+            </textarea>
+        </div>
+        <hr />
+        <div class="ModalSaveContainer">
+            <button @onclick="Save">
+                Add Activity
+            </button>
+        </div>
     </div>
 </div>
+
+@if (IsCloseModalShown)
+{
+    <div class="CloseModalWarningContainer">
+        <div class="CloseModalWarning" @onclick:stopPropagation>
+            <h3>Data wont be saved if menu is closed</h3>
+            <div class="CloseModalButtonContainer">
+                <button class="CloseModalButtonClose" @onclick="ExitModal">
+                    Close
+                </button>
+                <button class="CloseModalButtonBack" @onclick="Back">
+                    Back
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
+    private bool IsCloseModalShown = false;
     private bool isDropdownOpen = false;
     private HashSet<User> SelectedItems = new() { };
     public Activity Activity { get; set; } = new();
+
+    private DateTime startDate = DateTime.Now.Date;
+    private DateTime startTime = DateTime.Now;
+    private DateTime endDate = DateTime.Now.Date.AddHours(1);
+    private DateTime endTime = DateTime.Now.AddHours(1);
+
 
     [Parameter]
     public List<User> FamilyMembers { get; set; }
 
     [Parameter]
     public EventCallback CloseModal { get; set; }
+
+    protected override void OnInitialized()
+    {
+   
+    }
+
+    private async void Save()
+    {
+        Activity.AssignedMembers = SelectedItems;
+        Activity.FamilyId = token.CurrentAccount.FamilyId ?? throw new NullReferenceException();
+        Activity.StartDate = startDate.Date + startTime.TimeOfDay;
+        Activity.EndDate = endDate.Date + endTime.TimeOfDay;
+        if (Activity.StartDate > Activity.EndDate)
+        {
+            throw new Exception("The End date was before the Start date please insure the End date is after the startdate");
+        }
+        else
+        {
+            await hub.SaveActivity(token.CurrentAccount.FamilyId ?? throw new NullReferenceException(), Activity);
+            CloseModal.InvokeAsync(null);
+        }
+    }
+
+    private void ExitModal()
+    {
+        CloseModal.InvokeAsync(null);
+    }
+
+    private void Back()
+    {
+        IsCloseModalShown = false;
+    }
+
     private void Close()
     {
-        
-        CloseModal.InvokeAsync(null);
+        IsCloseModalShown = true;
+        //CloseModal.InvokeAsync(null);
     }
 
     private void ToggleDropdown()
@@ -58,8 +153,9 @@
 
     private void OnItemSelected(User selectedItem)
     {
-        if (!SelectedItems.Contains(selectedItem)) {
-            SelectedItems.Add(selectedItem);        
+        if (!SelectedItems.Contains(selectedItem))
+        {
+            SelectedItems.Add(selectedItem);
         }
         else
         {

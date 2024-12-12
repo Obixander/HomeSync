@@ -12,6 +12,12 @@ namespace Entities
         private List<User> members;
         private List<Activity> activities;
         private List<CustomList> customLists;
+        //public Family()
+        //{
+        //    Members = new();
+        //    Activities = new();
+        //    CustomLists = new();
+        //}
         public Family()
         {
             Members = new();

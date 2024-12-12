@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241204104858_UpdatedUserFamilyIdAgain1")]
-    partial class UpdatedUserFamilyIdAgain1
+    [Migration("20241210085041_FirstRUn3")]
+    partial class FirstRUn3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

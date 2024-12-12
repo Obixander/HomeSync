@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Services.Interfaces;
+using System.Diagnostics;
 
 namespace WebConnection.Hubs
 {
@@ -14,14 +15,35 @@ namespace WebConnection.Hubs
         {
             return await familyRepository.GetFamilyMembersBy(FamilyId);
         }
-        public async Task<List<Activity>> GetAllActivities (int FamilyId)
+        public async Task<string> GetAllActivities (int FamilyId)
         {
-            return await activityRepository.GetAllBy(FamilyId); //this should return the activities for that familyid to the caller
+            var test = await activityRepository.GetAllBy(FamilyId); //this should return the activities for that familyid to the caller
+            string Dto = JsonConvert.SerializeObject(test, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            return Dto;
         }
-        public async Task CreateTask(string familyId, Activity activity) //This method should in theory add the newly made activity to the database and then send to all 
+        public async Task SaveActivity(string familyId, Entities.Activity activity) //This method should in theory add the newly made activity to the database and then send to all 
         {
-            await activityRepository.Add(activity);
-            await Clients.Group(familyId).SendAsync("ActivityAdded", activity); 
+            await activityRepository.SaveActivity(activity);
+            
+            string Dto = JsonConvert.SerializeObject(activity, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            await Clients.Group(familyId).SendAsync("ActivityAdded", Dto); 
+        }
+        public async Task UpdateActivity(string familyId, Entities.Activity activity)
+        {
+            Console.WriteLine("Sending Dto now to FamilyId: " + familyId);
+            await activityRepository.UpdateActivities(activity);
+            string Dto = JsonConvert.SerializeObject(activity, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            await Clients.Group(familyId).SendAsync("ActivityUpdated", Dto);
+
         }
         public async Task<User> Login(User user)
         {

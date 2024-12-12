@@ -13,11 +13,16 @@
 
 @if (activities != null)
 {
-    <div>Week: @WeekNumber</div>
+    
     <table class="table table-bordered">
         <thead>
+            <tr>
+                <th><button class="TableButton" @onclick="() => CreateActivity()">Add Activity</button></th>
+                <th colspan="6"><h1>Week: @WeekNumber</h1></th>
+                <th><img src="@Token.CurrentAccount.ProfilePhoto" alt="Alternate Text" /></th>
+            </tr>
             <tr class="TableHeaderContainer">
-                <th><button @onclick="() => CreateActivity()">Add Activity</button></th>
+                <th><button><i class="fa-solid fa-gear"></i></button></th>
                 <th>Monday</th>
                 <th>Tuesday</th>
                 <th>Wednesday</th>
@@ -62,12 +67,28 @@
                                 string height = ((int)durationInHours * 60).ToString() + "px"; // each <td> is 60px which means 1 px is 1 minute
                                 string marginTop = activity.StartDate.Minute.ToString() + "px"; // Minutes to pixels for start offset
                                 string leftOffset = (index * int.Parse(activityWidth.Split("%")[0])).ToString() + "%"; // Horizontal positioning
-                               
+                                string color = "";
+                                @switch (activity.Status)
+                                {
+                                    case StatusOfActivity.Pending:
+                                        color = "#ff9600";
+                                        break;
+                                    case StatusOfActivity.Active:
+                                        color = "#f4f13f";
+                                        break;
+                                    case StatusOfActivity.Completed:
+                                        color = "#a2ff2c";
+                                        break;
+                                    case StatusOfActivity.Cancelled:
+                                        color = "#C70039";
+                                        break;
+                                }
                                 <div class="activity-card"
                                      style="
                                         height:@height; margin-top:@marginTop;
                                         width:@activityWidth;
-                                        left:@leftOffset;"
+                                        left:@leftOffset;
+                                        background-color:@color;"
                                      @onclick="() => CardPressed(activity)">
                                     <ActivityCard Activity="@activity"></ActivityCard>
                                 </div>
@@ -131,20 +152,37 @@
         {
             calendar = new CultureInfo("da-dk").Calendar;
             WeekNumber = calendar.GetWeekOfYear(DateTime.UtcNow, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-            // activities.Add(new Activity("Take out the Trash", DateTime.Now, DateTime.Now.AddHours(4), 0));
-            // activities.Add(new Activity("get grocercies from Rema 1000", DateTime.Now.AddMinutes(30), DateTime.Now.AddHours(4), 0));
-            // activities.Add(new Activity("Clean Room", DateTime.Now.AddHours(1), DateTime.Now.AddHours(4), 0));
-            // activities.Add(new Activity("Eat Food", DateTime.Now.AddHours(4), DateTime.Now.AddHours(5), 0));
-            activities = await hub.HubConnection.InvokeAsync<List<Activity>>("GetAllActivities", Token.CurrentAccount.FamilyId);
+
+            string temp = await hub.HubConnection.InvokeAsync<string>("GetAllActivities", Token.CurrentAccount.FamilyId);
+            activities = JsonConvert.DeserializeObject<List<Activity>>(temp) ?? throw new ArgumentNullException();
             family = await hub.HubConnection.InvokeAsync<Family>("GetFamily", Token.CurrentAccount.FamilyId) ?? throw new ArgumentNullException();
-            hub.HubConnection.On<Activity> ("ActivityAdded", async Event =>
+            hub.HubConnection.On<string>("ActivityAdded", async Event =>
             {
-                if (!activities.Contains(Event))
+                var temp = JsonConvert.DeserializeObject<Activity>(Event);
+
+                if (!activities.Contains(temp))
                 {
-                    activities.Add(Event);
+                    activities.Add(temp);
                     await InvokeAsync(StateHasChanged);
                 }
             });
+
+            hub.HubConnection.On <string>("ActivityUpdated", async Event =>
+            {
+                var temp = JsonConvert.DeserializeObject<Activity>(Event);
+
+                foreach (var activity in activities)
+                {
+                    if (temp.ActivityId == activity.ActivityId)
+                    {
+                        activities.Remove(activity);
+                        activities.Add(temp);
+                        break;
+                    }
+                }
+                await InvokeAsync(StateHasChanged);
+            });
+
             await InvokeAsync(StateHasChanged);
             await base.OnInitializedAsync();
         }
@@ -175,9 +213,9 @@
         isModalVisible = false;
         clickedActivity = null; // Optionally clear the activity
     }
-    private void CloseCreation() 
-    {   
-        isCreateModalVisible = false;   
+    private void CloseCreation()
+    {
+        isCreateModalVisible = false;
     }
 
     protected override void OnAfterRender(bool firstRender)

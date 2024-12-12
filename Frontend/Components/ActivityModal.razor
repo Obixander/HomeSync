@@ -1,32 +1,185 @@
 ﻿@using Entities
-
-    @*Will be used to set the width to the fullscreen and the transparet background*@
+@using Frontend.Data
+@using Services
+@inject SignalRService hub
+@inject SessionToken token
+@*Will be used to set the width to the fullscreen and the transparet background*@
 <div class="ModalContainer" @onclick="Close">
 
     @*Will be used for the actual modal*@
     <div class="Modal" @onclick:stopPropagation>
-        <div class="ModalHeaderContainer">
-            <h3>@Activity.Name</h3>
-            <i class="fa-solid fa-pen"></i>
-        </div>
-        <hr />
-        @if (Activity.Description != null)
+        @if (!isEditing)
         {
-            <p>@Activity.Description</p>
+            <div class="ActiveMemberContainer">
+                <div class="ActiveMemberIconContainer">
+                    @foreach (var member in Activity.AssignedMembers ?? throw new NullReferenceException())
+                    {
+                        <img src="@member.ProfilePhoto" alt="Profile Image should be here" />
+                    }
+                </div>
+                <div class="ActiveMemberDeleteContainer">
+                    <i class="fa-solid fa-trash"></i>
+                </div>
+            </div>
+            <div class="MainBodyContainer">
+                @* Top Row Section *@
+                <div class="HeaderRowContainer">
+                    <h1>@Activity.Name</h1>
+                    <div class="HeaderRowIconContainer">
+                        <select class="form-select" @bind="@temp.Status">
+                            <option>@StatusOfActivity.Pending</option>
+                            <option>@StatusOfActivity.Active</option>
+                            <option>@StatusOfActivity.Completed</option>
+                            <option>@StatusOfActivity.Cancelled</option>
+                        </select>
+                        <i class="fa-solid fa-pen" @onclick="Edit"></i>
+                    </div>
+                </div>
+
+                @* Middle Row Section *@
+                <hr />
+                <div class="MiddleRowContainer">
+                    <div class="MiddleRowItem">
+                        <div>
+                            <h4>Start Date</h4>
+                            <p>@temp.StartDate</p>
+                        </div>
+                    </div>
+                    <div class="Seperator">
+                        <hr />
+                    </div>
+                    <div class="MiddleRowItem">
+                        <div>
+                            <h4>End Date</h4>
+                            <p>@temp.EndDate</p>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                @* Description Row Section *@
+                <hr />
+                <div class="DescriptionRowContainer">
+                    <h3>
+                        Description
+                    </h3>
+                    <p>@temp.Description</p>
+                </div>
+            </div>
         }
-        <p>@Activity.StartDate</p>
-        <p>@Activity.EndDate</p>
+        else if (isEditing)
+        {
+            <div class="ActiveMemberContainer">
+                <div class="ActiveMemberIconContainer">
+                    @foreach (var member in Activity.AssignedMembers ?? throw new NullReferenceException())
+                    {
+                        <img class="ProfilPhotoEdit" src="@member.ProfilePhoto" alt="Profile Image should be here" @onclick="RemoveMember"/>
+                    }
+                    <div class="EditAddMember" @onclick="AddMember">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                </div>
+                <div class="ActiveMemberDeleteContainer">
+                    <i class="fa-solid fa-trash"></i>
+                </div>
+            </div>
+            <div class="MainBodyContainer">
+                @* Top Row Section *@
+                <div class="HeaderRowContainer">
+                    <input @bind="@temp.Name"/>
+                    <div class="HeaderRowIconContainer">
+                        <select class="form-select" @bind="@temp.Status">
+                            <option>@StatusOfActivity.Pending</option>
+                            <option>@StatusOfActivity.Active</option>
+                            <option>@StatusOfActivity.Completed</option>
+                            <option>@StatusOfActivity.Cancelled</option>
+                        </select>
+                        <i class="fa-solid fa-ban" @onclick="Edit"></i>
+                    </div>
+                </div>
+
+                @* Middle Row Section *@
+                <hr />
+                <div class="MiddleRowContainer">
+                    <div class="MiddleRowItem">
+                        <div>
+                            <h4>Start Date</h4>
+                            <input type="date" @bind="@startDate" />
+                            <input type="time" @bind="@startTime" />
+                        </div>
+                    </div>
+                    <div class="Seperator">
+                        <hr />
+                    </div>
+                    <div class="MiddleRowItem">
+                        <div>
+                            <h4>End Date</h4>
+                            <input type="date" @bind="@endDate" />
+                            <input type="time" @bind="@endTime" />
+                        </div>
+                    </div>
+                </div>
+
+                @* Description Row Section *@
+                <hr />
+                <div class="DescriptionRowContainer">
+                    <h3>
+                        Description
+                    </h3>
+                    <textarea @bind="@temp.Description"></textarea>
+                    <button @onclick="Close">Save Changes</button>
+                </div>
+            </div>
+        }
 
     </div>
 </div>
 
-@code {
+@code
+{
     [Parameter]
     public Activity Activity { get; set; }
+    private Activity temp;
     [Parameter]
     public EventCallback CloseModal { get; set; }
-    private void Close()
+
+    private bool isEditing = false;
+    private DateTime startDate = DateTime.Now.Date;
+    private DateTime startTime = DateTime.Now;
+    private DateTime endDate = DateTime.Now.Date.AddHours(1);
+    private DateTime endTime = DateTime.Now.AddHours(1);
+
+    protected override void OnInitialized()
     {
+        startDate = Activity.StartDate.Date;
+        startTime = Activity.StartDate;
+        endDate = Activity.EndDate.Date;
+        endTime = Activity.EndDate;
+        temp = Activity;
+    }
+
+    private void AddMember()
+    {
+        throw new NotImplementedException();
+    }
+    private void RemoveMember()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void Edit()
+    {
+        isEditing = !isEditing;
+        StateHasChanged();
+    }
+
+    private async void Close()
+    {
+        temp.StartDate = startDate.Date + startTime.TimeOfDay;
+        temp.EndDate = endDate.Date + endTime.TimeOfDay;
+        await hub.UpdateActivity(token.CurrentAccount.FamilyId ?? throw new NullReferenceException(), temp);
         CloseModal.InvokeAsync(null);
     }
+
 }

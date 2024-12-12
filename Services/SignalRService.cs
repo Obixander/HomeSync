@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Entities;
+using Microsoft.AspNetCore.SignalR.Client;
 using System;
 
 namespace Services
@@ -11,7 +12,31 @@ namespace Services
         {
             _hubConnection = new HubConnectionBuilder().WithUrl(new Uri("https://localhost:7139/homesynchub")).WithAutomaticReconnect().Build(); 
         }
-
+        public async Task SaveActivity(int FamilyId, Activity activity)
+        {
+            try
+            {
+                // Assuming 'SaveActivity' is a method on your SignalR hub that handles saving the activity
+                await _hubConnection.InvokeAsync("SaveActivity", FamilyId.ToString(), activity);
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions if the connection or invocation fails
+                Console.WriteLine($"Error invoking SignalR method: {ex.Message}");
+            }
+        }
+        public async Task UpdateActivity(int FamilyId, Activity activity)
+        {
+            try
+            {
+                await _hubConnection.InvokeAsync("UpdateActivity", FamilyId.ToString(), activity);
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions if the connection or invocation fails
+                Console.WriteLine($"Error invoking SignalR method: {ex.Message}");
+            }
+        }
         public async Task StartConnectionAsync()
         {
             if (_hubConnection.State == HubConnectionState.Disconnected)
@@ -35,7 +60,6 @@ namespace Services
             {
                 try
                 {
-                    // Wait for a few seconds before retrying connection (implement your retry strategy here)
                     await _hubConnection.StartAsync();
                 }
                 catch (Exception ex)
