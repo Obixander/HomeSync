@@ -15,10 +15,11 @@
                     @foreach (var member in Activity.AssignedMembers ?? throw new NullReferenceException())
                     {
                         <img src="@member.ProfilePhoto" alt="Profile Image should be here" />
+
                     }
                 </div>
                 <div class="ActiveMemberDeleteContainer">
-                    <i class="fa-solid fa-trash"></i>
+                    <i @onclick="() => DeleteActivity()" class="fa-solid fa-trash"></i>
                 </div>
             </div>
             <div class="MainBodyContainer">
@@ -74,10 +75,21 @@
                 <div class="ActiveMemberIconContainer">
                     @foreach (var member in Activity.AssignedMembers ?? throw new NullReferenceException())
                     {
-                        <img class="ProfilPhotoEdit" src="@member.ProfilePhoto" alt="Profile Image should be here" @onclick="RemoveMember"/>
+                        <img class="ProfilPhotoEdit" src="@member.ProfilePhoto" alt="Profile Image should be here" @onclick="() => RemoveMember(member)" />
                     }
-                    <div class="EditAddMember" @onclick="AddMember">
-                        <i class="fa-solid fa-plus"></i>
+                    <div class="AddMemberContainer">
+                        <div class="EditAddMember" @onclick="AddMember">
+                            <i class="fa-solid fa-plus"></i>
+                        </div>
+                        @if (AddingMembers)
+                        {
+                            <ul class="AddMember">
+                                @foreach (var member in token.CurrentAccount.Family.Members ?? throw new ArgumentNullException())
+                                {
+                                    <li @onclick="() => OnItemSelected(member)" class="@(SelectedItems.Contains(member) ? "selected" : "")">@member.UserName</li>
+                                }
+                            </ul>
+                        }
                     </div>
                 </div>
                 <div class="ActiveMemberDeleteContainer">
@@ -87,7 +99,7 @@
             <div class="MainBodyContainer">
                 @* Top Row Section *@
                 <div class="HeaderRowContainer">
-                    <input @bind="@temp.Name"/>
+                    <input @bind="@temp.Name" />
                     <div class="HeaderRowIconContainer">
                         <select class="form-select" @bind="@temp.Status">
                             <option>@StatusOfActivity.Pending</option>
@@ -145,6 +157,8 @@
     public EventCallback CloseModal { get; set; }
 
     private bool isEditing = false;
+    private bool AddingMembers = false;
+    private HashSet<User> SelectedItems = new() { };
     private DateTime startDate = DateTime.Now.Date;
     private DateTime startTime = DateTime.Now;
     private DateTime endDate = DateTime.Now.Date.AddHours(1);
@@ -159,18 +173,38 @@
         temp = Activity;
     }
 
+    private async void DeleteActivity()
+    {
+        //call hub;
+        await hub.DeleteActivity(token.CurrentAccount.FamilyId ?? throw new ArgumentNullException(), Activity);
+        await CloseModal.InvokeAsync(null);
+    }
+
+
     private void AddMember()
     {
-        throw new NotImplementedException();
+        AddingMembers = !AddingMembers;
     }
-    private void RemoveMember()
+    private void RemoveMember(User user)
     {
-        throw new NotImplementedException();
+        if (Activity != null)
+        {
+            Activity.AssignedMembers.Remove(user);
+            StateHasChanged();
+        }
     }
 
     private void Edit()
     {
         isEditing = !isEditing;
+        foreach (var member in Activity.AssignedMembers)
+        {
+            member.Activities = null;
+            if (!SelectedItems.Contains(member))
+            { 
+                SelectedItems.Add(member); 
+            }
+        }
         StateHasChanged();
     }
 
@@ -179,7 +213,21 @@
         temp.StartDate = startDate.Date + startTime.TimeOfDay;
         temp.EndDate = endDate.Date + endTime.TimeOfDay;
         await hub.UpdateActivity(token.CurrentAccount.FamilyId ?? throw new NullReferenceException(), temp);
-        CloseModal.InvokeAsync(null);
+        await CloseModal.InvokeAsync(null);
+    }
+
+    private void OnItemSelected(User selectedItem)
+    {
+        if (!SelectedItems.Contains(selectedItem))
+        {
+            SelectedItems.Add(selectedItem);
+            Activity.AssignedMembers.Add(selectedItem);
+        }
+        else
+        {
+            SelectedItems.Remove(selectedItem);
+            Activity.AssignedMembers.Remove(selectedItem);
+        }
     }
 
 }

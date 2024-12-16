@@ -45,6 +45,22 @@ namespace WebConnection.Hubs
             await Clients.Group(familyId).SendAsync("ActivityUpdated", Dto);
 
         }
+        public async Task DeleteActivity(string familyId, Entities.Activity activity)
+        {
+            try
+            {
+                await activityRepository.DeleteActivity(activity);
+                string Dto = JsonConvert.SerializeObject(activity, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+                await Clients.Group(familyId).SendAsync("ActivityDeleted", Dto);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public async Task<User> Login(User user)
         {
             return await userRepository.Login(user);

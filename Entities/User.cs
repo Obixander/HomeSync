@@ -54,5 +54,19 @@ namespace Entities
         public int? FamilyId { get => familyId; set => familyId = value; }
         [JsonIgnore]
         public Family? Family { get => family; set => family = value; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is User other)
+            {
+                return this.UserId == other.UserId && this.UserName == other.UserName;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(UserId, UserName);
+        }
     }
 }

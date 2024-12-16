@@ -13,7 +13,7 @@
 
 @if (activities != null)
 {
-    
+    UpdateTableTimeSlots();
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -64,7 +64,7 @@
                             {
                                 // Calculate duration and offset
                                 var durationInHours = (activity.EndDate - activity.StartDate).TotalHours;
-                                string height = ((int)durationInHours * 60).ToString() + "px"; // each <td> is 60px which means 1 px is 1 minute
+                                string height = (((int)durationInHours * 60) + activity.EndDate.Minute).ToString() + "px"; // each <td> is 60px which means 1 px is 1 minute
                                 string marginTop = activity.StartDate.Minute.ToString() + "px"; // Minutes to pixels for start offset
                                 string leftOffset = (index * int.Parse(activityWidth.Split("%")[0])).ToString() + "%"; // Horizontal positioning
                                 string color = "";
@@ -141,10 +141,8 @@
     {
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     };
-    private List<string> timeSlots = new List<string> //problely not the best way to handle this but hey it works for now
-    {
-        "00:00","01:00","02:00","03:00","04:00","05:00","06:00","07:00","08:00","09:00","10:00","11:00","12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00","21:00","22:00","23:00",
-    };
+    private List<string> timeSlots = new List<string>();
+
 
     protected async override Task OnInitializedAsync()
     {
@@ -156,6 +154,8 @@
             string temp = await hub.HubConnection.InvokeAsync<string>("GetAllActivities", Token.CurrentAccount.FamilyId);
             activities = JsonConvert.DeserializeObject<List<Activity>>(temp) ?? throw new ArgumentNullException();
             family = await hub.HubConnection.InvokeAsync<Family>("GetFamily", Token.CurrentAccount.FamilyId) ?? throw new ArgumentNullException();
+            Token.CurrentAccount.FamilyId = family.FamilyId;
+            Token.CurrentAccount.Family = family;
             hub.HubConnection.On<string>("ActivityAdded", async Event =>
             {
                 var temp = JsonConvert.DeserializeObject<Activity>(Event);
@@ -167,7 +167,7 @@
                 }
             });
 
-            hub.HubConnection.On <string>("ActivityUpdated", async Event =>
+            hub.HubConnection.On<string>("ActivityUpdated", async Event =>
             {
                 var temp = JsonConvert.DeserializeObject<Activity>(Event);
 
@@ -180,6 +180,14 @@
                         break;
                     }
                 }
+                await InvokeAsync(StateHasChanged);
+            });
+
+            hub.HubConnection.On<string>("ActivityDeleted", async Event =>
+            {
+                var temp = JsonConvert.DeserializeObject<Activity>(Event);
+                temp = activities.FirstOrDefault(x => x.ActivityId == temp.ActivityId);
+                activities.Remove(temp);
                 await InvokeAsync(StateHasChanged);
             });
 
@@ -196,6 +204,27 @@
         }
     }
 
+    private void UpdateTableTimeSlots()
+    {
+        if (activities != null && activities.Count != 0)
+        {
+            var tempList = activities.OrderBy(x => x.StartDate.Hour).ToList();
+            timeSlots.Clear();
+            //use something like this if there is a reason to cut of the extra time after "tempList[tempList.Count-1].EndDate.Hour+1"
+            //do remember that this will take in to consideration if the enddate is 23 + 1 which would be above the max
+            for (int i = (tempList[0].StartDate.Hour - 1 > 0) ? tempList[0].StartDate.Hour - 1 : 0; i <= 23; i++)
+            {
+                if (i < 10)
+                {
+                    timeSlots.Add($"0{i}:00");
+                }
+                else
+                {
+                    timeSlots.Add($"{i}:00");
+                }
+            }
+        }
+    }
 
     public void CreateActivity()
     {
@@ -216,6 +245,7 @@
     private void CloseCreation()
     {
         isCreateModalVisible = false;
+        UpdateTableTimeSlots();
     }
 
     protected override void OnAfterRender(bool firstRender)

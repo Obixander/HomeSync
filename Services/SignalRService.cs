@@ -37,6 +37,20 @@ namespace Services
                 Console.WriteLine($"Error invoking SignalR method: {ex.Message}");
             }
         }
+
+        public async Task DeleteActivity(int FamilyId, Activity activity)
+        {
+            try
+            {
+                await _hubConnection.InvokeAsync("DeleteActivity", FamilyId.ToString(), activity);
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions if the connection or invocation fails
+                Console.WriteLine($"Error invoking SignalR method: {ex.Message}");
+            }
+        }
+
         public async Task StartConnectionAsync()
         {
             if (_hubConnection.State == HubConnectionState.Disconnected)

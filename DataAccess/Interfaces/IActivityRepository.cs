@@ -7,5 +7,6 @@ namespace DataAccess.Interfaces
         Task<List<Activity>> GetAllBy(int familyId);
         Task SaveActivity(Activity Entity);
         Task UpdateActivities(Activity Entity);
+        Task DeleteActivity(Activity Entity);
     }
 }

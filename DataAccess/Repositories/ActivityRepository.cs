@@ -14,14 +14,45 @@ namespace DataAccess.Repositories
 {
     public class ActivityRepository(DataContext context) : GenericRepository<Activity>(context), IActivityRepository
     {
-
+        //Add an Delete here after break where the ef context is updated to be able to handle it
+        public async Task DeleteActivity(Activity entity)
+        {
+            try
+            {
+                var entry = context.Entry(entity);
+                if (entry.State == EntityState.Detached)
+                {
+                    context.Attach(entity);
+                    context.Remove(entity);
+                    await context.SaveChangesAsync();
+                }
+                else
+                {
+                    context.Remove(entity);
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public async Task UpdateActivities(Activity entity)
         {
             try
             {
-                //NO WORKING
-                context.Update(entity);   
-                await context.SaveChangesAsync();
+                var entry = context.Entry(entity);
+                if (entry.State == EntityState.Detached)
+                {
+                    context.Attach(entity); 
+                    entry.State = EntityState.Modified;
+                    await context.SaveChangesAsync();
+                }
+                else
+                {
+                    context.Update(entity);
+                    await context.SaveChangesAsync();
+                }
             }
             catch (Exception ex)
             {
