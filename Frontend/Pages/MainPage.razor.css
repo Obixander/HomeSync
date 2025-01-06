@@ -80,3 +80,54 @@ th button {
     width: 100%;
     height: 100%;
 }
+
+/*List Section*/
+#ContentContainer {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+#ListSectionContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 30%;
+}
+
+.ListSectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 4.26rem;
+}
+    .ListSectionHeader div:first-of-type {
+        width: 80%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+        .ListSectionHeader div:first-of-type h2 
+        {
+            margin-bottom: 0;
+        }
+        .ListSectionHeader div:last-of-type {
+            width: 20%;
+            height: 100%;
+            border-left: solid #dee2e6 1px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .ListSectionHeader div:last-of-type i {
+            font-size: 3rem;
+        }
+            .ListSectionHeader div:last-of-type i:hover {
+                cursor: pointer;
+                color: lawngreen
+            }
+.ListContainer {
+    border-right: solid #dee2e6 1px;
+    border-bottom: solid #dee2e6 1px;
+}

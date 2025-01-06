@@ -19,7 +19,11 @@ namespace Entities
         {
             Content = content;
         }
-
+        public CustomListItem(string content, bool Completed)
+        {
+            Content = content;
+            this.Completed = Completed;
+        }
         public int CustomlistItemId { get => customlistItemId; set => customlistItemId = value; }
         public string Content { get => content; set => content = value; }
         public bool Completed { get => completed; set => completed = value; }

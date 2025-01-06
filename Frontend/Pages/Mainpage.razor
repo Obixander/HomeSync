@@ -14,94 +14,116 @@
 @if (activities != null)
 {
     UpdateTableTimeSlots();
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th><button class="TableButton" @onclick="() => CreateActivity()">Add Activity</button></th>
-                <th colspan="6"><h1>Week: @WeekNumber</h1></th>
-                <th><img src="@Token.CurrentAccount.ProfilePhoto" alt="Alternate Text" /></th>
-            </tr>
-            <tr class="TableHeaderContainer">
-                <th><button><i class="fa-solid fa-gear"></i></button></th>
-                <th>Monday</th>
-                <th>Tuesday</th>
-                <th>Wednesday</th>
-                <th>Thursday</th>
-                <th>Friday</th>
-                <th>Saturday</th>
-                <th>Sunday</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var timeSlot in timeSlots)
-            {
+    <div id="ContentContainer">
+        <table class="table table-bordered">
+            <thead>
                 <tr>
-                    <td>@timeSlot</td>
-                    @foreach (var day in weekdays)
-                    {
-                        <td>
-                            <!-- Set relative position for stacking -->
-                            @{
-                                // Find activities for this timeslot and day
-                                var activitiesInThisSlot = activities.Where(activity => activity.StartDate.DayOfWeek.ToString() == day && activity.StartDate.ToString("HH") == timeSlot.Split(":")[0]).ToList();
+                    <th><button class="TableButton" @onclick="() => CreateActivity()">Add Activity</button></th>
+                    <th colspan="6"><h1>Week: @WeekNumber</h1></th>
+                    <th><img src="@Token.CurrentAccount.ProfilePhoto" alt="Alternate Text" /></th>
+                </tr>
+                <tr class="TableHeaderContainer">
+                    <th><button><i class="fa-solid fa-gear"></i></button></th>
+                    <th>Monday</th>
+                    <th>Tuesday</th>
+                    <th>Wednesday</th>
+                    <th>Thursday</th>
+                    <th>Friday</th>
+                    <th>Saturday</th>
+                    <th>Sunday</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var timeSlot in timeSlots)
+                {
+                    <tr>
+                        <td>@timeSlot</td>
+                        @foreach (var day in weekdays)
+                        {
+                            <td>
+                                <!-- Set relative position for stacking -->
+                                @{
+                                    // Find activities for this timeslot and day
+                                    var activitiesInThisSlot = activities.Where(activity => activity.StartDate.DayOfWeek.ToString() == day && activity.StartDate.ToString("HH") == timeSlot.Split(":")[0]).ToList();
 
-                                // Calculate overlap positions dynamically
-                                var maxOverlap = activitiesInThisSlot.Count;
-                                string activityWidth = "";
-                                if (maxOverlap != 0)
-                                {
-                                    activityWidth = (100 / maxOverlap).ToString();
+                                    // Calculate overlap positions dynamically
+                                    var maxOverlap = activitiesInThisSlot.Count;
+                                    string activityWidth = "";
+                                    if (maxOverlap != 0)
+                                    {
+                                        activityWidth = (100 / maxOverlap).ToString();
+                                    }
+                                    else
+                                    {
+                                        activityWidth = "100";
+                                    }
+                                    activityWidth += "%";
+                                    int index = 0;
                                 }
-                                else
-                                {
-                                    activityWidth = "100";
-                                }
-                                activityWidth += "%";
-                                int index = 0;
-                            }
 
-                            @foreach (var activity in activitiesInThisSlot)
-                            {
-                                // Calculate duration and offset
-                                var durationInHours = (activity.EndDate - activity.StartDate).TotalHours;
-                                string height = (((int)durationInHours * 60) + activity.EndDate.Minute).ToString() + "px"; // each <td> is 60px which means 1 px is 1 minute
-                                string marginTop = activity.StartDate.Minute.ToString() + "px"; // Minutes to pixels for start offset
-                                string leftOffset = (index * int.Parse(activityWidth.Split("%")[0])).ToString() + "%"; // Horizontal positioning
-                                string color = "";
-                                @switch (activity.Status)
+                                @foreach (var activity in activitiesInThisSlot)
                                 {
-                                    case StatusOfActivity.Pending:
-                                        color = "#ff9600";
-                                        break;
-                                    case StatusOfActivity.Active:
-                                        color = "#f4f13f";
-                                        break;
-                                    case StatusOfActivity.Completed:
-                                        color = "#a2ff2c";
-                                        break;
-                                    case StatusOfActivity.Cancelled:
-                                        color = "#C70039";
-                                        break;
-                                }
-                                <div class="activity-card"
-                                     style="
+                                    //The old way the Activity card's where calcaluted
+                                   @*  var durationInHours = (activity.EndDate.Hour - activity.StartDate.Hour); //this part might be giving issues
+                                    string height = (((int)durationInHours * 60) + activity.EndDate.Minute).ToString() + "px"; // each <td> is 60px which means 1 px is 1 minute
+                                    string marginTop = activity.StartDate.Minute.ToString() + "px"; // Minutes to pixels for start offset *@
+                                    
+                                    // Calculate duration and offset
+                                    var durationInMinutes = (activity.EndDate - activity.StartDate).TotalMinutes; //this part might be giving issues
+                                    string height = (((int)durationInMinutes)).ToString() + "px";
+                                    string marginTop = activity.StartDate.Minute.ToString() + "px";
+
+                                    string leftOffset = (index * int.Parse(activityWidth.Split("%")[0])).ToString() + "%"; // Horizontal positioning
+                                    string color = "";
+                                    @switch (activity.Status)
+                                    {
+                                        case StatusOfActivity.Pending:
+                                            color = "#ff9600";
+                                            break;
+                                        case StatusOfActivity.Active:
+                                            color = "#f4f13f";
+                                            break;
+                                        case StatusOfActivity.Completed:
+                                            color = "#a2ff2c";
+                                            break;
+                                        case StatusOfActivity.Cancelled:
+                                            color = "#C70039";
+                                            break;
+                                    }
+                                    <div class="activity-card"
+                                         style="
                                         height:@height; margin-top:@marginTop;
                                         width:@activityWidth;
                                         left:@leftOffset;
                                         background-color:@color;"
-                                     @onclick="() => CardPressed(activity)">
-                                    <ActivityCard Activity="@activity"></ActivityCard>
-                                </div>
+                                         @onclick="() => CardPressed(activity)">
+                                        <ActivityCard Activity="@activity"></ActivityCard>
+                                    </div>
 
-                                index++; // Increment for next overlapping activity
-                            }
-                        </td>
-                    }
-                </tr>
-            }
-        </tbody>
-    </table>
+                                    index++; // Increment for next overlapping activity
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        
+        <div id="ListSectionContainer">
+            <div class="ListSectionHeader">
+                <div>
+                    <h2>Create List</h2>
+                </div>
+                <div>
+                    <i class="fa-solid fa-plus" @onclick="() =>ToggleListCreation()"></i>
+                </div>
+            </div>
+        <section class="ListContainer">
 
+        </section>
+        </div>
+
+    </div>
 
     @if (isModalVisible)
     {
@@ -111,12 +133,17 @@
     {
         <CreateActivityModal FamilyMembers="@family.Members" CloseModal="CloseCreation"></CreateActivityModal>
     }
+    @if (isCreateListVisible)
+    {
+        //add componenet for Adding Lists here;
+        <CreateListModal CloseModal="ToggleListCreation"></CreateListModal>
+    }
 }
 
 @code {
     private bool isCreateModalVisible = false;
     private bool isModalVisible = false;
-
+    private bool isCreateListVisible = false;
     private Activity clickedActivity = null;
     private Calendar calendar;
     private int weekNumber;
@@ -129,7 +156,6 @@
         set
         {
             weekNumber = value;
-            // Console.WriteLine("Week Number is " + WeekNumber);
         }
     }
 
@@ -137,12 +163,16 @@
     private Family family;
     private List<Activity> activities = new();
 
-    private List<string> weekdays = new List<string> //problely not the best way to handle this but hey it works for now
+    private List<string> weekdays = new List<string>
     {
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     };
     private List<string> timeSlots = new List<string>();
-
+    private List<CustomList> CustomLists = new();
+    public void CreateList()
+    {
+        isCreateListVisible = !isCreateListVisible;
+    }
 
     protected async override Task OnInitializedAsync()
     {
@@ -154,8 +184,10 @@
             string temp = await hub.HubConnection.InvokeAsync<string>("GetAllActivities", Token.CurrentAccount.FamilyId);
             activities = JsonConvert.DeserializeObject<List<Activity>>(temp) ?? throw new ArgumentNullException();
             family = await hub.HubConnection.InvokeAsync<Family>("GetFamily", Token.CurrentAccount.FamilyId) ?? throw new ArgumentNullException();
+
             Token.CurrentAccount.FamilyId = family.FamilyId;
             Token.CurrentAccount.Family = family;
+
             hub.HubConnection.On<string>("ActivityAdded", async Event =>
             {
                 var temp = JsonConvert.DeserializeObject<Activity>(Event);
@@ -237,6 +269,7 @@
         isModalVisible = true;
         clickedActivity = activity;
     }
+
     private void CloseModal()
     {
         isModalVisible = false;
@@ -247,7 +280,10 @@
         isCreateModalVisible = false;
         UpdateTableTimeSlots();
     }
-
+    private void ToggleListCreation()
+    {
+        isCreateListVisible = !isCreateListVisible;
+    }
     protected override void OnAfterRender(bool firstRender)
     {
         if (Token.CurrentAccount.UserId <= 0)

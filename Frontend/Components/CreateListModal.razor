@@ -1,0 +1,153 @@
+﻿@using Entities
+@using Frontend.Data
+@using Services
+@inject SignalRService hub
+@inject SessionToken token
+@*Will be used to set the width to the fullscreen and the transparet background*@
+<div class="ModalContainer">
+
+    @*Will be used for the actual modal*@
+    <div class="Modal" @onclick:stopPropagation>
+        <div class="ModalHeaderContainer">
+            <div>
+            </div>
+            <input @bind="@CustomList.Name" />
+            <div class="ModalHeaderIconContainer">
+                <i class="fa-solid fa-x" @onclick="Close"></i>
+            </div>
+        </div>
+        <hr />
+        <div class="ModalTimeSelectionContainer">
+            <div class="ModalTimeSelectionElement">
+                <div>
+                    <h4>Start Date</h4>
+                    <input type="date" @bind="@startDate" />
+                    <input type="time" @bind="@startTime" />
+                </div>
+            </div>
+            <div class="ModalTimeSelectionElementCenter">
+                ---
+            </div>
+            <div class="ModalTimeSelectionElement">
+                <div>
+                    <h4>End Date</h4>
+                    <input type="date" @bind="@endDate" />
+                    <input type="time" @bind="@endTime" />
+                </div>
+            </div>
+
+        </div>
+        <hr />
+        <div class="ModalDescriptionContainer">
+            <div>
+                <div>
+                    <h3>Create Item</h3>
+                    <div>
+                        <input type="text" placeholder="Title" @bind="tempName" />
+                        <button @onclick="AddItemToList">Add Item</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="test" />
+            <div Id="Scrollable">
+                @if (CustomList.Items != null && CustomList.Items.Count > 0)
+                {
+                    @foreach (var item in CustomList.Items)
+                    {
+                        <div class="ListItem">
+                            <input type="checkbox" @bind="@item.Completed"/>
+                            <h4>@item.Content</h4>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+
+        <hr />
+        <div class="ModalSaveContainer">
+            <button @onclick="Save">
+                Create List
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+@if (IsCloseModalShown)
+{
+    <div class="CloseModalWarningContainer">
+        <div class="CloseModalWarning" @onclick:stopPropagation>
+            <h3>Data wont be saved if menu is closed</h3>
+            <div class="CloseModalButtonContainer">
+                <button class="CloseModalButtonClose" @onclick="ExitModal">
+                    Close
+                </button>
+                <button class="CloseModalButtonBack" @onclick="Back">
+                    Back
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool IsCloseModalShown = false;
+    public CustomList CustomList { get; set; } = new();
+    private string tempName = "";
+    private DateTime startDate = DateTime.Now.Date;
+    private DateTime startTime = DateTime.Now;
+    private DateTime endDate = DateTime.Now.Date.AddHours(1);
+    private DateTime endTime = DateTime.Now.AddHours(1);
+
+    [Parameter]
+    public EventCallback CloseModal { get; set; }
+
+    protected override void OnInitialized()
+    {
+        CustomList.Items = new();
+    }
+
+    private async void Save()
+    {
+        // CustomList.FamilyId = token.CurrentAccount.FamilyId ?? throw new NullReferenceException();
+        CustomList.StartDate = startDate.Date + startTime.TimeOfDay;
+        CustomList.EndDate = endDate.Date + endTime.TimeOfDay;
+        if (CustomList.StartDate > CustomList.EndDate)
+        {
+            throw new Exception("The End date was before the Start date please insure the End date is after the startdate");
+        }
+        else
+        {
+            // await hub.SaveActivity(token.CurrentAccount.FamilyId ?? throw new NullReferenceException(), Activity);
+            // CloseModal.InvokeAsync(null);
+        }
+    }
+
+    private void ExitModal()
+    {
+        CloseModal.InvokeAsync(null);
+    }
+
+    private void Back()
+    {
+        IsCloseModalShown = false;
+    }
+
+    private void Close()
+    {
+        IsCloseModalShown = true;
+    }
+    private void AddItemToList()
+    {
+        if (tempName != "" && tempName != null)
+        {
+            CustomListItem item = new CustomListItem(tempName, false);
+            if (CustomList.Items != null)
+            {
+                CustomList.Items.Add(item);
+            }
+        }
+    }
+}

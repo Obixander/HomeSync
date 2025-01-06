@@ -1,0 +1,211 @@
+﻿/*
+    Names in use
+    - Classes - 
+    ModalContainer
+    Modal
+    ModalHeaderContainer
+    ModalHeaderIconContainer
+    ModalTimeSelectionContainer
+    ModalTimeSelectionElement
+*/
+
+.ModalContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99; /* Ensure it’s on top */
+    overflow-y:hidden;
+}
+
+.Modal {
+    height: 70%;
+    position: relative;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 1200px;
+    max-height: 720px;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    overflow-y: hidden;
+}
+
+.ModalHeaderContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .ModalHeaderContainer i {
+        font-size: 25px;
+        color: crimson;
+    }
+
+    .ModalHeaderContainer input {
+        height: 40px;
+        width: 70%;
+    }
+
+    .ModalHeaderContainer i:hover {
+        cursor: pointer;
+        color: darkred;
+    }
+
+.ModalHeaderIconContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 0.5rem;
+}
+
+.ModalTimeSelectionContainer {
+    display: flex;
+    justify-content: space-evenly;
+    width: 60%;
+    margin: 0 auto;
+}
+
+.ModalTimeSelectionElement {
+    display: flex;
+    flex-direction: column;
+}
+
+.ModalTimeSelectionElementCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ModalHeaderIconContainer select {
+    width: 50%;
+    padding: .375rem 0rem .375rem .75rem;
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: right .75rem center;
+    background-size: 16px 12px;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    margin-right: 1rem;
+}
+
+.CloseModalWarningContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+.CloseModalWarning {
+    height: 15%;
+    position: relative;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 540px;
+    max-height: 70%;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 999999;
+    text-align: center;
+}
+
+.CloseModalButtonContainer {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 1rem;
+}
+
+.CloseModalWarning button {
+    width: 40%;
+}
+
+button:hover {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.CloseModalButtonClose {
+    background-color: red;
+    color: white;
+}
+
+.CloseModalButtonBack {
+    background-color: green;
+    color: white;
+}
+
+.ModalDescriptionContainer {
+    margin: 0 auto;
+    text-align: center;
+    max-height: 340px;
+    height: 55%;
+}
+.ModalDescriptionContainer>div {
+    display: flex;
+    justify-content: center;
+}
+
+#CustomListAdd button {
+width: 50%;
+}
+
+.ModalSaveContainer {
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+    .ModalSaveContainer button {
+        padding: 10px 50px;
+        background-color: lawngreen;
+    }
+.ListItem {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+}
+
+    .ListItem h4 {
+        margin: 0;
+        margin-left: 10px;
+    }
+.ListItem input {
+    margin-right: 1rem;
+    width: 1rem;
+}
+
+.ListItem:first-of-type {
+    margin-top: 3rem;
+}
+
+#Scrollable {
+    display: flex;
+    flex-direction:column;
+    height: 240px; /* Set the height for the scrollable container */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+
+
+.test {
+    margin-bottom: 0;
+}
