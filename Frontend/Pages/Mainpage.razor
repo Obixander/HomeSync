@@ -118,9 +118,10 @@
                     <i class="fa-solid fa-plus" @onclick="() =>ToggleListCreation()"></i>
                 </div>
             </div>
+            
         <section class="ListContainer">
                 @foreach (var list in customLists)
-                {
+                { //TODO: Add sorting to the lists so that earliest one comes first
                     <div class="CustomList">
                         <div>
                             <h3>@list.Name</h3>
@@ -137,7 +138,7 @@
                             @foreach (var item in list.Items)
                             {
                                 <div>
-                                    <input type="checkbox" @bind="item.Completed" @onclick="() =>UpdateListItem()" />
+                                    <input type="checkbox" @onclick="() => UpdateListItem(item, list)" checked="@item.Completed" />
                                     @item.Content
                                 </div>
                             }
@@ -328,9 +329,16 @@
         }
     }
 
-    private void UpdateListItem()
+    private async void UpdateListItem(CustomListItem item, CustomList list)
     {
-
+        foreach (var oldItem in list.Items)
+        {
+            if (oldItem.CustomlistItemId == item.CustomlistItemId)
+            {
+                oldItem.Completed = !item.Completed;
+            }
+        }
+        await hub.UpdateList(list.FamilyId, list);
     }
     private void EditList(CustomList list)
     {

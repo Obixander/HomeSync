@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241210093411_run3")]
-    partial class run3
+    [Migration("20250108105356_CreateCustomListItemsTable")]
+    partial class CreateCustomListItemsTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -85,7 +85,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("FamilyId")
+                    b.Property<int>("FamilyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -117,7 +117,7 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CustomListId")
+                    b.Property<int>("CustomListId")
                         .HasColumnType("int");
 
                     b.HasKey("CustomlistItemId");
@@ -198,14 +198,20 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("Entities.Family", null)
                         .WithMany("CustomLists")
-                        .HasForeignKey("FamilyId");
+                        .HasForeignKey("FamilyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Entities.CustomListItem", b =>
                 {
-                    b.HasOne("Entities.CustomList", null)
+                    b.HasOne("Entities.CustomList", "CustomList")
                         .WithMany("Items")
-                        .HasForeignKey("CustomListId");
+                        .HasForeignKey("CustomListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CustomList");
                 });
 
             modelBuilder.Entity("Entities.User", b =>

@@ -34,7 +34,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("AssignedMembersUserId");
 
-                    b.ToTable("ActivityUser", (string)null);
+                    b.ToTable("ActivityUser");
                 });
 
             modelBuilder.Entity("Entities.Activity", b =>
@@ -68,7 +68,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("FamilyId");
 
-                    b.ToTable("Activities", (string)null);
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("Entities.CustomList", b =>
@@ -96,7 +96,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("FamilyId");
 
-                    b.ToTable("CustomLists", (string)null);
+                    b.ToTable("CustomLists");
                 });
 
             modelBuilder.Entity("Entities.CustomListItem", b =>
@@ -114,14 +114,14 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CustomListId")
+                    b.Property<int>("CustomListId")
                         .HasColumnType("int");
 
                     b.HasKey("CustomlistItemId");
 
                     b.HasIndex("CustomListId");
 
-                    b.ToTable("CustomListItems", (string)null);
+                    b.ToTable("CustomListItems");
                 });
 
             modelBuilder.Entity("Entities.Family", b =>
@@ -134,7 +134,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("FamilyId");
 
-                    b.ToTable("Families", (string)null);
+                    b.ToTable("Families");
                 });
 
             modelBuilder.Entity("Entities.User", b =>
@@ -164,7 +164,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("FamilyId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ActivityUser", b =>
@@ -202,9 +202,13 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Entities.CustomListItem", b =>
                 {
-                    b.HasOne("Entities.CustomList", null)
+                    b.HasOne("Entities.CustomList", "CustomList")
                         .WithMany("Items")
-                        .HasForeignKey("CustomListId");
+                        .HasForeignKey("CustomListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CustomList");
                 });
 
             modelBuilder.Entity("Entities.User", b =>
