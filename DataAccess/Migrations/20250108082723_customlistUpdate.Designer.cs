@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250108082723_customlistUpdate")]
+    partial class customlistUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("AssignedMembersUserId");
 
-                    b.ToTable("ActivityUser", (string)null);
+                    b.ToTable("ActivityUser");
                 });
 
             modelBuilder.Entity("Entities.Activity", b =>
@@ -68,7 +71,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("FamilyId");
 
-                    b.ToTable("Activities", (string)null);
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("Entities.CustomList", b =>
@@ -96,7 +99,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("FamilyId");
 
-                    b.ToTable("CustomLists", (string)null);
+                    b.ToTable("CustomLists");
                 });
 
             modelBuilder.Entity("Entities.CustomListItem", b =>
@@ -121,7 +124,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("CustomListId");
 
-                    b.ToTable("CustomListItems", (string)null);
+                    b.ToTable("CustomListItems");
                 });
 
             modelBuilder.Entity("Entities.Family", b =>
@@ -134,7 +137,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("FamilyId");
 
-                    b.ToTable("Families", (string)null);
+                    b.ToTable("Families");
                 });
 
             modelBuilder.Entity("Entities.User", b =>
@@ -164,7 +167,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("FamilyId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ActivityUser", b =>

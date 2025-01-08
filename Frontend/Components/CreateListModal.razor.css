@@ -172,39 +172,44 @@ width: 50%;
     width: 80%;
     margin: 0 auto;
     text-align: center;
+    margin-top: 1rem;
 }
 
     .ModalSaveContainer button {
         padding: 10px 50px;
         background-color: lawngreen;
     }
+
 .ListItem {
     padding: 10px;
     border-bottom: 1px solid #ccc;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-
-    .ListItem h4 {
-        margin: 0;
-        margin-left: 10px;
-    }
+.ListItem>div {
+    display:flex;
+}
+.ListItem i:hover {
+    color: red;
+    cursor: pointer;
+}
+.ListItem h4 {
+    margin: 0;
+    margin-left: 10px;
+}
 .ListItem input {
     margin-right: 1rem;
     width: 1rem;
 }
 
-.ListItem:first-of-type {
-    margin-top: 3rem;
-}
-
 #Scrollable {
     display: flex;
-    flex-direction:column;
-    height: 240px; /* Set the height for the scrollable container */
+    flex-direction: column;
+    height: 250px; /* Set the height for the scrollable container */
     overflow-y: auto; /* Enable vertical scrolling */
+    justify-content: normal;
 }
-
-
 
 .test {
     margin-bottom: 0;

@@ -27,8 +27,8 @@ namespace WebConnection
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
             builder.Services.AddScoped<IFamilyRepository, FamilyRepository>();
+            builder.Services.AddScoped<ICustomListRepository, CustomListRepository>();
 
-            builder.Services.AddScoped<IGenericRepository<CustomList>, GenericRepository<CustomList>>();
             builder.Services.AddScoped<IGenericRepository<CustomListItem>, GenericRepository<CustomListItem>>();
             builder.Services.AddControllers().AddJsonOptions(x =>
             x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);

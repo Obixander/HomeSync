@@ -21,15 +21,14 @@ namespace DataAccess
                 .WithMany(u => u.Activities);
 
             modelBuilder.Entity<User>().HasMany(u => u.Activities).WithMany(a => a.AssignedMembers);
+            
+            modelBuilder.Entity<CustomList>()
+                .HasMany(c => c.Items) // A CustomList can have many CustomListItems
+                .WithOne() // Each CustomListItem is related to one CustomList
+                .HasForeignKey(ci => ci.CustomListId) // Foreign key for CustomList
+                .OnDelete(DeleteBehavior.Cascade);
 
-            //modelBuilder.Entity<Activity>()
-            //    .HasMany(e => e.AssignedMembers)
-            //    .WithMany(e => e.Activities)
-            //    .UsingEntity(
-            //    "ActivityUsers",
-            //    l => l.HasOne(typeof(User)).WithMany().HasForeignKey("UserId").HasPrincipalKey(nameof(User.UserId)),
-            //    r => r.HasOne(typeof(Activity)).WithMany().HasForeignKey("ActivityId").HasPrincipalKey(nameof(Activity.ActivityId)),
-            //    j => j.HasKey("UserId", "ActivityId"));
+            base.OnModelCreating(modelBuilder);
         }
 
     }

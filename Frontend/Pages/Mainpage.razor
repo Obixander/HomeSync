@@ -119,7 +119,31 @@
                 </div>
             </div>
         <section class="ListContainer">
-
+                @foreach (var list in customLists)
+                {
+                    <div class="CustomList">
+                        <div>
+                            <h3>@list.Name</h3>
+                            <i class="fa-solid fa-pen" @onclick="() =>EditList(list)"></i>
+                        </div>
+                        <div>
+                            @list.StartDate
+                            -
+                            @list.EndDate
+                        </div>
+                        <hr />
+                        @if (list.Items != null)
+                        {
+                            @foreach (var item in list.Items)
+                            {
+                                <div>
+                                    <input type="checkbox" @bind="item.Completed" @onclick="() =>UpdateListItem()" />
+                                    @item.Content
+                                </div>
+                            }
+                        }
+                    </div>
+                }
         </section>
         </div>
 
@@ -138,12 +162,19 @@
         //add componenet for Adding Lists here;
         <CreateListModal CloseModal="ToggleListCreation"></CreateListModal>
     }
+    @if (IsEditListVisible)
+    {
+        <CreateListModal CustomList="@SelectedList" CloseModal="ToggleListUpdate"></CreateListModal>
+
+    }
 }
 
 @code {
+    private bool IsEditListVisible = false;
     private bool isCreateModalVisible = false;
     private bool isModalVisible = false;
     private bool isCreateListVisible = false;
+    private CustomList SelectedList = null;
     private Activity clickedActivity = null;
     private Calendar calendar;
     private int weekNumber;
@@ -162,13 +193,13 @@
 
     private Family family;
     private List<Activity> activities = new();
+    private List<CustomList> customLists = new();
 
     private List<string> weekdays = new List<string>
     {
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     };
     private List<string> timeSlots = new List<string>();
-    private List<CustomList> CustomLists = new();
     public void CreateList()
     {
         isCreateListVisible = !isCreateListVisible;
@@ -185,8 +216,47 @@
             activities = JsonConvert.DeserializeObject<List<Activity>>(temp) ?? throw new ArgumentNullException();
             family = await hub.HubConnection.InvokeAsync<Family>("GetFamily", Token.CurrentAccount.FamilyId) ?? throw new ArgumentNullException();
 
+            temp = await hub.HubConnection.InvokeAsync<string>("GetAllLists", Token.CurrentAccount.FamilyId);
+            customLists = JsonConvert.DeserializeObject<List<CustomList>>(temp) ?? throw new ArgumentNullException();
+
             Token.CurrentAccount.FamilyId = family.FamilyId;
             Token.CurrentAccount.Family = family;
+
+
+            hub.HubConnection.On<string>("ListDeleted", async Event =>
+           {
+               var temp = JsonConvert.DeserializeObject<CustomList>(Event);
+               temp = customLists.FirstOrDefault(x => x.CustomListId == temp.CustomListId);
+               customLists.Remove(temp);
+               await InvokeAsync(StateHasChanged);
+           });
+
+            hub.HubConnection.On<string>("ListUpdated", async Event =>
+            {
+                var temp = JsonConvert.DeserializeObject<CustomList>(Event);
+
+                foreach (var list in customLists)
+                {
+                    if (temp.CustomListId == list.CustomListId)
+                    {
+                        customLists.Remove(list);
+                        customLists.Add(temp);
+                        break;
+                    }
+                }
+                await InvokeAsync(StateHasChanged);
+            });
+
+            hub.HubConnection.On<string>("ListAdded", async Event =>
+            {
+                var temp = JsonConvert.DeserializeObject<CustomList>(Event);
+
+                if (!customLists.Contains(temp))
+                {
+                    customLists.Add(temp);
+                    await InvokeAsync(StateHasChanged);
+                }
+            });
 
             hub.HubConnection.On<string>("ActivityAdded", async Event =>
             {
@@ -258,6 +328,19 @@
         }
     }
 
+    private void UpdateListItem()
+    {
+
+    }
+    private void EditList(CustomList list)
+    {
+        SelectedList = list;
+        IsEditListVisible = true;
+    }
+    private void ToggleListUpdate()
+    {
+        IsEditListVisible = !IsEditListVisible;
+    }
     public void CreateActivity()
     {
         isCreateModalVisible = true;

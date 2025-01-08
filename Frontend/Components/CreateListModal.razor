@@ -10,8 +10,12 @@
     <div class="Modal" @onclick:stopPropagation>
         <div class="ModalHeaderContainer">
             <div>
+                @if(!IsCreate)
+                {
+                    <i class="fa-solid fa-trash" @onclick="Delete"></i>
+                }
             </div>
-            <input @bind="@CustomList.Name" />
+            <input @bind="@CustomList.Name" placeholder="Enter List Title"/>
             <div class="ModalHeaderIconContainer">
                 <i class="fa-solid fa-x" @onclick="Close"></i>
             </div>
@@ -55,8 +59,11 @@
                     @foreach (var item in CustomList.Items)
                     {
                         <div class="ListItem">
-                            <input type="checkbox" @bind="@item.Completed"/>
-                            <h4>@item.Content</h4>
+                            <div>
+                                <input type="checkbox" @bind="@item.Completed" />
+                                <h4>@item.Content</h4>
+                            </div>
+                            <i @onclick="() => DeleteItem(item)" class="fa-solid fa-trash"></i>
                         </div>
                     }
                 }
@@ -64,7 +71,6 @@
         </div>
 
 
-        <hr />
         <div class="ModalSaveContainer">
             <button @onclick="Save">
                 Create List
@@ -94,35 +100,59 @@
 
 @code {
     private bool IsCloseModalShown = false;
-    public CustomList CustomList { get; set; } = new();
     private string tempName = "";
     private DateTime startDate = DateTime.Now.Date;
     private DateTime startTime = DateTime.Now;
     private DateTime endDate = DateTime.Now.Date.AddHours(1);
     private DateTime endTime = DateTime.Now.AddHours(1);
-
+    private bool IsCreate;
+    [Parameter]
+    public CustomList? CustomList { get; set; }
     [Parameter]
     public EventCallback CloseModal { get; set; }
 
     protected override void OnInitialized()
     {
-        CustomList.Items = new();
+        if (CustomList == null)
+        {
+            CustomList = new CustomList();
+            CustomList.Items = new();
+            IsCreate = true;
+        }
+        else
+        {
+            IsCreate = false;
+        }
     }
 
     private async void Save()
     {
-        // CustomList.FamilyId = token.CurrentAccount.FamilyId ?? throw new NullReferenceException();
-        CustomList.StartDate = startDate.Date + startTime.TimeOfDay;
-        CustomList.EndDate = endDate.Date + endTime.TimeOfDay;
-        if (CustomList.StartDate > CustomList.EndDate)
+        if (IsCreate)
         {
-            throw new Exception("The End date was before the Start date please insure the End date is after the startdate");
+            CustomList.FamilyId = token.CurrentAccount.FamilyId ?? throw new NullReferenceException();
+            CustomList.StartDate = startDate.Date + startTime.TimeOfDay;
+            CustomList.EndDate = endDate.Date + endTime.TimeOfDay;
+            if (CustomList.StartDate > CustomList.EndDate)
+            {
+                throw new Exception("The End date was before the Start date please insure the End date is after the startdate");
+            }
+            else
+            {
+                await hub.SaveList(CustomList.FamilyId, CustomList);
+                await CloseModal.InvokeAsync(null);
+            }
         }
         else
         {
-            // await hub.SaveActivity(token.CurrentAccount.FamilyId ?? throw new NullReferenceException(), Activity);
-            // CloseModal.InvokeAsync(null);
+            await hub.UpdateList(CustomList.FamilyId, CustomList);
+            await CloseModal.InvokeAsync(null);
         }
+    }
+
+    private async void Delete()
+    {
+        await hub.DeleteList(CustomList.FamilyId, CustomList);
+        await CloseModal.InvokeAsync(null);
     }
 
     private void ExitModal()
@@ -135,9 +165,16 @@
         IsCloseModalShown = false;
     }
 
-    private void Close()
+    private async void Close()
     {
-        IsCloseModalShown = true;
+        if (IsCreate)
+        {
+            IsCloseModalShown = true;
+        }
+        else
+        {
+            await CloseModal.InvokeAsync(null);
+        }
     }
     private void AddItemToList()
     {
@@ -150,4 +187,13 @@
             }
         }
     }
+
+    private void DeleteItem(CustomListItem item)
+    {
+        if (CustomList.Items != null)
+        {
+            CustomList.Items.Remove(item);
+        }
+    }
+
 }

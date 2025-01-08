@@ -13,6 +13,8 @@ namespace Entities
         private List<CustomListItem>? items;
         private DateTime startDate;
         private DateTime endDate;
+        private int familyId;
+
         public CustomList()
         {
             
@@ -29,5 +31,6 @@ namespace Entities
         public List<CustomListItem>? Items { get => items; set => items = value; }
         public DateTime StartDate { get => startDate; set => startDate = value; }
         public DateTime EndDate { get => endDate; set => endDate = value; }
+        public int FamilyId { get => familyId; set => familyId = value; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
+using System.Diagnostics;
 
 namespace Services
 {
@@ -12,7 +13,43 @@ namespace Services
         {
             _hubConnection = new HubConnectionBuilder().WithUrl(new Uri("https://localhost:7139/homesynchub")).WithAutomaticReconnect().Build(); 
         }
-        public async Task SaveActivity(int FamilyId, Activity activity)
+
+        public async Task DeleteList(int FamilyId, CustomList list)
+        {
+            try
+            {
+                await _hubConnection.InvokeAsync("DeleteList", FamilyId.ToString(), list);
+            }
+            catch (Exception ex)
+            {
+                // Handle any exceptions if the connection or invocation fails
+                Console.WriteLine($"Error invoking SignalR method: {ex.Message}");
+            }
+        }
+        public async Task UpdateList(int FamilyId, CustomList list)
+        {
+            try
+            {
+                await _hubConnection.InvokeAsync("UpdateList", FamilyId, list);
+            }
+            catch
+            {
+                //TODO: add error handling
+            }
+
+        }
+        public async Task SaveList(int FamilyId, CustomList list)
+        {
+            try
+            {
+                await _hubConnection.InvokeAsync("SaveList", FamilyId.ToString(), list);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task SaveActivity(int FamilyId, Entities.Activity activity)
         {
             try
             {
@@ -25,7 +62,7 @@ namespace Services
                 Console.WriteLine($"Error invoking SignalR method: {ex.Message}");
             }
         }
-        public async Task UpdateActivity(int FamilyId, Activity activity)
+        public async Task UpdateActivity(int FamilyId, Entities.Activity activity)
         {
             try
             {
@@ -38,7 +75,7 @@ namespace Services
             }
         }
 
-        public async Task DeleteActivity(int FamilyId, Activity activity)
+        public async Task DeleteActivity(int FamilyId, Entities.Activity activity)
         {
             try
             {

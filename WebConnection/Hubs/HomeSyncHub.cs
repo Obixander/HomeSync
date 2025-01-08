@@ -9,8 +9,61 @@ using System.Diagnostics;
 
 namespace WebConnection.Hubs
 {
-    public class HomeSyncHub(IActivityRepository activityRepository,IFamilyRepository familyRepository, IUserRepository userRepository) : Hub, IHomeSyncHub
+    public class HomeSyncHub(ICustomListRepository customListRepository, IActivityRepository activityRepository,IFamilyRepository familyRepository, IUserRepository userRepository) : Hub, IHomeSyncHub
     {
+        public async Task DeleteList(string FamilyId, CustomList list)
+        {
+            try
+            {
+                await customListRepository.DeleteList(list);
+                string Dto = JsonConvert.SerializeObject(list, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+                await Clients.Group(FamilyId).SendAsync("ListDeleted", Dto);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task UpdateList(int FamilyId, CustomList list)
+        {
+            await customListRepository.Update(list);
+            string Dto = JsonConvert.SerializeObject(list, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            await Clients.Group(FamilyId.ToString()).SendAsync("ListUpdated", Dto);
+        }
+        public async Task<string> GetAllLists(int familyId)
+        {
+            var test = await customListRepository.GetAllBy(familyId); //this should return the activities for that familyid to the caller
+            string Dto = JsonConvert.SerializeObject(test, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            return Dto;
+        }
+
+        public async Task SaveList(string familyId, CustomList list)
+        {
+            try
+            {
+                await customListRepository.SaveList(list);
+
+                string Dto = JsonConvert.SerializeObject(list, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+                await Clients.Group(familyId).SendAsync("ListAdded", Dto);
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public async Task<Family> GetFamily(int FamilyId)
         {
             return await familyRepository.GetFamilyMembersBy(FamilyId);

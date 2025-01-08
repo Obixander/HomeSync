@@ -11,6 +11,7 @@ namespace Entities
         private int customlistItemId;
         private string content;
         private bool completed;
+        private int customListId;  // Foreign key to CustomList
         public CustomListItem()
         {
             
@@ -27,5 +28,10 @@ namespace Entities
         public int CustomlistItemId { get => customlistItemId; set => customlistItemId = value; }
         public string Content { get => content; set => content = value; }
         public bool Completed { get => completed; set => completed = value; }
+
+        public int CustomListId { get => customListId; set => customListId = value; }
+
+        // Navigation property (not required but useful for EF Core to track the relationship)
+        public CustomList CustomList { get; set; }
     }
 }
