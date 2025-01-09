@@ -34,7 +34,7 @@ namespace Services
             }
             catch
             {
-                //TODO: add error handling
+                throw;
             }
 
         }

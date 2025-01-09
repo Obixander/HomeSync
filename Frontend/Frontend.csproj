@@ -10,6 +10,7 @@
     <None Remove="Components\ActivityCard.razor.css" />
     <None Remove="Components\ActivityModal.razor.css" />
     <None Remove="Components\CreateActivityModal.razor.css" />
+    <None Remove="Pages\AccountCreation.razor.css" />
     <None Remove="Pages\LoginPage.razor.css" />
     <None Remove="Pages\MainPage.razor.css" />
   </ItemGroup>
@@ -18,6 +19,7 @@
     <Content Include="Components\ActivityCard.razor.css" />
     <Content Include="Components\ActivityModal.razor.css" />
     <Content Include="Components\CreateActivityModal.razor.css" />
+    <Content Include="Pages\AccountCreation.razor.css" />
     <Content Include="Pages\LoginPage.razor.css" />
     <Content Include="Pages\MainPage.razor.css" />
   </ItemGroup>

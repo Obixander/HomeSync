@@ -23,14 +23,13 @@
 }
 
 .Modal {
-    height: 58%;
+    height: 75%;
     position: relative;
     background-color: white;
     padding: 0px 3rem 0px 0px;
     border-radius: 10px;
     width: 100%;
     max-width: 1200px;
-    max-height: 60%;
     overflow-y: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 100;
@@ -80,10 +79,14 @@
     justify-content: space-between;
 }
 
-.HeaderRowIconContainer {
-    display: flex;
-    align-items: center;
-}
+    .HeaderRowContainer input {
+        width: 85%;
+    }
+
+    .HeaderRowIconContainer {
+        display: flex;
+        align-items: center;
+    }
 
     .HeaderRowIconContainer select {
         margin-right: 1rem;

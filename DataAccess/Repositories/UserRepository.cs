@@ -1,4 +1,4 @@
-﻿    using Azure.Core;
+﻿using Azure.Core;
 using DataAccess.Interfaces;
 using Entities;
 using Microsoft.EntityFrameworkCore;
@@ -13,17 +13,23 @@ namespace DataAccess.Repositories
 {
     public class UserRepository(DataContext context) : GenericRepository<User>(context), IUserRepository
     {
-        public async Task<string> CreateUser(User user)
+        public async Task<string> CreateAccount(User user, Family family)
         {
             try
             {
-                if (context.Users.Any(g => g.UserName == user.UserName))
+                if (context.Families.Any(u => u.FamilyName == family.FamilyName) && context.Families.Any(u => u.FamilyPassword == family.FamilyPassword))
                 {
-                    return "An Error has occured this username is already in use";
+
+                    if (context.Users.Any(g => g.UserName == user.UserName))
+                    {
+                        return "An Error has occured this username is already in use";
+                    }
+                    user.FamilyId = await context.Families.Where(u => u.FamilyName == family.FamilyName && u.FamilyPassword == family.FamilyPassword).Select(u => u.FamilyId).FirstOrDefaultAsync();
+                    await context.AddAsync(user);
+                    await context.SaveChangesAsync();
+                    return "Succes the user has been created";
                 }
-                await context.AddAsync(user);
-                await context.SaveChangesAsync();
-                return "Succes the user has been created";
+                return "Family does not exist or password is incorrect";
             }
             catch
             {

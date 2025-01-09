@@ -1,0 +1,110 @@
+﻿@page "/account"
+@using Entities
+@using Frontend.Components
+@using Microsoft.AspNetCore.SignalR.Client
+@using Newtonsoft.Json
+@using Services
+@using System.Globalization
+@using Frontend.Data
+@inject NavigationManager Navigation
+@inject SignalRService hub
+@inject SessionToken Token
+
+<PageTitle>Account Creation</PageTitle>
+@if (toggleBetweenCreation)
+{
+    <div class="PageContainer">
+        <i id="BackArrow" class="fa-solid fa-arrow-left" @onclick="Back"></i>
+        <div class="AccountCreationContainer">
+            <div class="AccountCreationMember">
+                <p>Username</p>
+                <input required type="text" @bind=Account.UserName placeholder="Enter Username here" />
+            </div>
+            <div class="AccountCreationMember">
+                <p>Password</p>
+                <input required type="password" @bind=Account.Password placeholder="Enter Password here" />
+            </div>
+            <div class="AccountCreationMember">
+                <p>Family Name</p>
+                <input required type="text" @bind=Account.Family.FamilyName placeholder="Enter the name of the family here" />
+            </div>
+            <div class="AccountCreationMember">
+                <p>Family Password</p>
+                <input required type="password" @bind=Account.Family.FamilyPassword placeholder="Enter the password for family here" />
+            </div>
+            <div class="AccountCreationButtonContainer">
+                <button @onclick="CreateAccount">Create Account</button>
+                <button @onclick="CreateFamily">Go to Family Creation</button>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="PageContainer">
+        <div class="AccountCreationContainer">
+            <div class="AccountCreationMember">
+                <p>Family Name</p>
+                <input type="text" @bind=family.FamilyName placeholder="Enter the name of the family here" />
+            </div>
+            <div class="AccountCreationMember">
+                <p>Family Password</p>
+                <input type="password" @bind=family.FamilyPassword placeholder="Enter the password for family here" />
+            </div>
+            <div class="AccountCreationButtonContainer">
+                <button @onclick="CreateFamily">Create Family</button>
+                <button @onclick="CreateAccount">Go to Account Creation</button>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    private User Account = new();
+    private Family family;
+    string ReceivedMessage;
+    private bool toggleBetweenCreation = true;
+
+    private void Back()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private async void CreateAccount()
+    {
+        if (toggleBetweenCreation)
+        {
+            if (hub.HubConnection.State == HubConnectionState.Disconnected)
+            {
+                await hub.StartConnectionAsync();
+                Console.WriteLine(hub.HubConnection.State);
+            }
+            family = Account.Family;
+            Account.ProfilePhoto = "images/profile/Default.jpg";
+            ReceivedMessage = await hub.HubConnection.InvokeAsync<string>("CreateAccount", Account, family);
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            toggleBetweenCreation = true;
+        }
+    }
+    private async void CreateFamily()
+    {
+        if (!toggleBetweenCreation)
+        {
+            ReceivedMessage = await hub.HubConnection.InvokeAsync<string>("CreateFamily", family);
+            toggleBetweenCreation = !toggleBetweenCreation;
+            await InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            toggleBetweenCreation = false;
+        }
+    }
+    protected override Task OnInitializedAsync()
+    {
+        Account.Family = new();
+        family = new();
+        return base.OnInitializedAsync();
+    }
+}

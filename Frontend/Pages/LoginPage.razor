@@ -28,6 +28,10 @@
         <button @onclick="() => Login(Account)">
             Login
         </button>
+        <button @onclick="() => CreateAccount()">
+            Create Account
+        </button>
+
     </div>
 
 </article>
@@ -46,6 +50,11 @@
         {
 
         }
+    }
+
+    private async Task CreateAccount()
+    {
+        Navigation.NavigateTo("/account");
     }
 
     private async Task Login(User user)

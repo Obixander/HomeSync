@@ -122,6 +122,10 @@
         else
         {
             IsCreate = false;
+            startDate = CustomList.StartDate;
+            startTime = CustomList.StartDate;
+            endDate = CustomList.EndDate;
+            endTime = CustomList.EndDate;
         }
     }
 
@@ -144,6 +148,8 @@
         }
         else
         {
+            CustomList.StartDate = startDate.Date + startTime.TimeOfDay;
+            CustomList.EndDate = endDate.Date + endTime.TimeOfDay;
             await hub.UpdateList(CustomList.FamilyId, CustomList);
             await CloseModal.InvokeAsync(null);
         }

@@ -11,6 +11,22 @@ namespace WebConnection.Hubs
 {
     public class HomeSyncHub(ICustomListRepository customListRepository, IActivityRepository activityRepository,IFamilyRepository familyRepository, IUserRepository userRepository) : Hub, IHomeSyncHub
     {
+        public async Task<string> CreateFamily(Family family)
+        {
+            try
+            {
+                await familyRepository.Add(family);
+                return "Success";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+        public async Task<string> CreateAccount(User user, Family family)
+        { //the user that's received for some reason has the family to be null????  
+            return await userRepository.CreateAccount(user, family);
+        }
         public async Task DeleteList(string FamilyId, CustomList list)
         {
             try

@@ -16,7 +16,8 @@ namespace WebConnection.Controllers
         {
             try
             {
-                var test = await repository.CreateUser(user);
+                Family temp = user.Family;
+                var test = await repository.CreateAccount(user, temp);
                 if(test.Contains("Succes"))
                 {
                     return Ok(test);

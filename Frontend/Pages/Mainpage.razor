@@ -120,8 +120,12 @@
             </div>
             
         <section class="ListContainer">
+                @{
+                    customLists = customLists.OrderBy(list => list.StartDate).ToList();
+
+                }
                 @foreach (var list in customLists)
-                { //TODO: Add sorting to the lists so that earliest one comes first
+                { 
                     <div class="CustomList">
                         <div>
                             <h3>@list.Name</h3>
@@ -160,7 +164,6 @@
     }
     @if (isCreateListVisible)
     {
-        //add componenet for Adding Lists here;
         <CreateListModal CloseModal="ToggleListCreation"></CreateListModal>
     }
     @if (IsEditListVisible)
