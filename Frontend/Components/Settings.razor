@@ -22,11 +22,18 @@
         <div class="Settings-Menu-Section">
             <h3>Roles</h3>
             <hr />
+           
             @foreach (var member in family.Members)
             { //TODO: Add a dropdown here with the roles selection
                 <div class="Settings-Menu-Item-Container">
                     <p>@member.UserName</p>
-                    @* Here *@
+                    <div id="Settings-Menu-Downdown-Container">
+                        <select class="form-select">
+                            <option>Parent</option>
+                            <option>Teenager</option>
+                            <option>Child</option>
+                        </select>
+                    </div>
                 </div>
             }
         </div>
@@ -61,13 +68,13 @@
     [Parameter]
     public EventCallback CloseModal { get; set; }
     private List<string> images = new();
-
+    private List<List<UserRole>> Roles = new();
     protected override void OnInitialized()
     {
         images.Add("/images/profile/Crab.jpg");
         images.Add("/images/profile/Dog.jpg");
         images.Add("/images/profile/Penguin.jpg");
-
+        
         base.OnInitialized();
     }
 

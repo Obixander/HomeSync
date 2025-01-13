@@ -57,3 +57,8 @@
 #CurrentImage {
     border: 3px solid black;
 }
+
+#Settings-Menu-Downdown-Container {
+    display: flex;
+    align-items: center;
+}
