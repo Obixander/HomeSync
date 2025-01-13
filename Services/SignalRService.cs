@@ -14,6 +14,12 @@ namespace Services
             _hubConnection = new HubConnectionBuilder().WithUrl(new Uri("https://localhost:7139/homesynchub")).WithAutomaticReconnect().Build(); 
         }
 
+        /// <summary>
+        /// This method is used to delete a list from the database
+        /// </summary>
+        /// <param name="FamilyId">The FamilyId belonging to a family</param>
+        /// <param name="list">The list to be deleted</param>
+        /// <returns>Void</returns>
         public async Task DeleteList(int FamilyId, CustomList list)
         {
             try
@@ -26,6 +32,13 @@ namespace Services
                 Console.WriteLine($"Error invoking SignalR method: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// This method is used to update an list in the database
+        /// </summary>
+        /// <param name="FamilyId">The FamilyId belonging to a family</param>
+        /// <param name="list">The list with the changes</param>
+        /// <returns>void</returns>
         public async Task UpdateList(int FamilyId, CustomList list)
         {
             try
@@ -38,6 +51,13 @@ namespace Services
             }
 
         }
+
+        /// <summary>
+        /// This method is used to add an list to the database
+        /// </summary>
+        /// <param name="FamilyId">The FamilyId belonging to a family</param>
+        /// <param name="list">The list to add to the database</param>
+        /// <returns>void</returns>
         public async Task SaveList(int FamilyId, CustomList list)
         {
             try
@@ -49,11 +69,18 @@ namespace Services
                 throw;
             }
         }
+
+
+        /// <summary>
+        /// This method is used to add an activity to the database
+        /// </summary>
+        /// <param name="FamilyId">The FamilyId belonging to a family</param>
+        /// <param name="activity">The Activity to add to the database</param>
+        /// <returns>void</returns>
         public async Task SaveActivity(int FamilyId, Entities.Activity activity)
         {
             try
             {
-                // Assuming 'SaveActivity' is a method on your SignalR hub that handles saving the activity
                 await _hubConnection.InvokeAsync("SaveActivity", FamilyId.ToString(), activity);
             }
             catch (Exception ex)
@@ -62,6 +89,13 @@ namespace Services
                 Console.WriteLine($"Error invoking SignalR method: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// This method is used to update an activity in the database
+        /// </summary>
+        /// <param name="FamilyId">The FamilyId belonging to a family</param>
+        /// <param name="activity">The Activity with the changes</param>
+        /// <returns>void</returns>
         public async Task UpdateActivity(int FamilyId, Entities.Activity activity)
         {
             try
@@ -75,6 +109,12 @@ namespace Services
             }
         }
 
+        /// <summary>
+        /// This method is used to delete an activity in the database
+        /// </summary>
+        /// <param name="FamilyId">The FamilyId belonging to a family</param>
+        /// <param name="activity">The Activity to be deleted</param>
+        /// <returns>void</returns>
         public async Task DeleteActivity(int FamilyId, Entities.Activity activity)
         {
             try
@@ -88,6 +128,10 @@ namespace Services
             }
         }
 
+        /// <summary>
+        /// This method is used to start the connection to the hub if the state is disconnected
+        /// </summary>
+        /// <returns>void</returns>
         public async Task StartConnectionAsync()
         {
             if (_hubConnection.State == HubConnectionState.Disconnected)
@@ -96,7 +140,10 @@ namespace Services
             }
 
         }
-
+        /// <summary>
+        /// This method is used to stop the connection to the hub if the state is connected
+        /// </summary>
+        /// <returns></returns>
         public async Task StopConnectionAsync()
         {
             if (_hubConnection.State == HubConnectionState.Connected)

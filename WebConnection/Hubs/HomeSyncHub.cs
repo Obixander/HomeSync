@@ -11,6 +11,11 @@ namespace WebConnection.Hubs
 {
     public class HomeSyncHub(ICustomListRepository customListRepository, IActivityRepository activityRepository,IFamilyRepository familyRepository, IUserRepository userRepository) : Hub, IHomeSyncHub
     {
+        /// <summary>
+        /// this method is used to add a family to the database
+        /// </summary>
+        /// <param name="family">the family that gets added to the database</param>
+        /// <returns>A string with either Succes or the error message</returns>
         public async Task<string> CreateFamily(Family family)
         {
             try
@@ -23,10 +28,24 @@ namespace WebConnection.Hubs
                 return ex.Message;
             }
         }
+
+        /// <summary>
+        /// This method is used to add an account to the database
+        /// </summary>
+        /// <param name="user">This the account that gets added to the database</param>
+        /// <param name="family">this is used to check if the family the account is trying to join exists</param>
+        /// <returns>Returns a string with a message of succes or error</returns>
         public async Task<string> CreateAccount(User user, Family family)
-        { //the user that's received for some reason has the family to be null????  
+        { 
             return await userRepository.CreateAccount(user, family);
         }
+
+        /// <summary>
+        /// This method is used to delete an list of the database
+        /// </summary>
+        /// <param name="FamilyId">is Used to find the right group to send the update to</param>
+        /// <param name="list">the list to be deleted from the database</param>
+        /// <returns>void</returns>
         public async Task DeleteList(string FamilyId, CustomList list)
         {
             try
@@ -43,6 +62,13 @@ namespace WebConnection.Hubs
                 throw;
             }
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="FamilyId"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
         public async Task UpdateList(int FamilyId, CustomList list)
         {
             await customListRepository.Update(list);

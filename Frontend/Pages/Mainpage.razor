@@ -63,11 +63,6 @@
 
                                 @foreach (var activity in activitiesInThisSlot)
                                 {
-                                    //The old way the Activity card's where calcaluted
-                                   @*  var durationInHours = (activity.EndDate.Hour - activity.StartDate.Hour); //this part might be giving issues
-                                    string height = (((int)durationInHours * 60) + activity.EndDate.Minute).ToString() + "px"; // each <td> is 60px which means 1 px is 1 minute
-                                    string marginTop = activity.StartDate.Minute.ToString() + "px"; // Minutes to pixels for start offset *@
-                                    
                                     // Calculate duration and offset
                                     var durationInMinutes = (activity.EndDate - activity.StartDate).TotalMinutes; //this part might be giving issues
                                     string height = (((int)durationInMinutes)).ToString() + "px";
@@ -204,10 +199,8 @@
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     };
     private List<string> timeSlots = new List<string>();
-    public void CreateList()
-    {
-        isCreateListVisible = !isCreateListVisible;
-    }
+
+
 
     protected async override Task OnInitializedAsync()
     {
@@ -310,14 +303,23 @@
         }
     }
 
+    /// <summary>
+    /// this method is used to display the create list screen
+    /// </summary>
+    private void CreateList()
+    {
+        isCreateListVisible = !isCreateListVisible;
+    }
+    /// <summary>
+    /// This method is used to calculate the amount of the timeslots to show before the earliest activity to safe space on the site as it would just be empty otherwise
+    /// the current implementation of cuts the "Whitespace" down to one hour before the earliest activity and doesn't change the amount of "whitespace" after the last activity
+    /// </summary>
     private void UpdateTableTimeSlots()
     {
         if (activities != null && activities.Count != 0)
         {
             var tempList = activities.OrderBy(x => x.StartDate.Hour).ToList();
             timeSlots.Clear();
-            //use something like this if there is a reason to cut of the extra time after "tempList[tempList.Count-1].EndDate.Hour+1"
-            //do remember that this will take in to consideration if the enddate is 23 + 1 which would be above the max
             for (int i = (tempList[0].StartDate.Hour - 1 > 0) ? tempList[0].StartDate.Hour - 1 : 0; i <= 23; i++)
             {
                 if (i < 10)
@@ -332,6 +334,11 @@
         }
     }
 
+    /// <summary>
+    /// This method is used to update the item's status when the user clicks on the checkbox and sends the update to the hub
+    /// </summary>
+    /// <param name="item">The item that needs to be updated</param>
+    /// <param name="list">The list where the item comes from</param>
     private async void UpdateListItem(CustomListItem item, CustomList list)
     {
         foreach (var oldItem in list.Items)
@@ -343,20 +350,45 @@
         }
         await hub.UpdateList(list.FamilyId, list);
     }
+
+    /// <summary>
+    /// This method is used to show the editing screen for lists
+    /// </summary>
+    /// <param name="list">The list that was selected to be edited</param>
     private void EditList(CustomList list)
     {
         SelectedList = list;
         IsEditListVisible = true;
     }
+
+    /// <summary>
+    ///     /// This method is used to hide the editing screen for lists
+    /// </summary>
     private void ToggleListUpdate()
     {
         IsEditListVisible = !IsEditListVisible;
     }
+
+    /// <summary>
+    ///     /// This method is used to toggle the create screen for lists
+    /// </summary>
+    private void ToggleListCreation()
+    {
+        isCreateListVisible = !isCreateListVisible;
+    }
+
+    /// <summary>
+    /// this method is used to toggle the create screen for activities
+    /// </summary>
     public void CreateActivity()
     {
         isCreateModalVisible = true;
     }
 
+    /// <summary>
+    /// this method is used to show the expanded info screen
+    /// </summary>
+    /// <param name="activity">The activity the user clicked on</param>
     public void CardPressed(Activity activity)
     {
         Console.WriteLine("Card: " + activity.Name + " was pressed");
@@ -364,20 +396,28 @@
         clickedActivity = activity;
     }
 
+    /// <summary>
+    /// this method is used to close the various "modals"
+    /// </summary>
     private void CloseModal()
     {
         isModalVisible = false;
         clickedActivity = null; // Optionally clear the activity
     }
+
+    /// <summary>
+    /// this method is used to close the modal for the creation modal and also call the "UpdateTableTimeSlots"
+    /// </summary>
     private void CloseCreation()
     {
         isCreateModalVisible = false;
         UpdateTableTimeSlots();
     }
-    private void ToggleListCreation()
-    {
-        isCreateListVisible = !isCreateListVisible;
-    }
+
+    /// <summary>
+    /// this method is here to send to user back to login screen if the userId is <= 0, which could be because of a browser refresh
+    /// </summary>
+    /// <param name="firstRender"></param>
     protected override void OnAfterRender(bool firstRender)
     {
         if (Token.CurrentAccount.UserId <= 0)
