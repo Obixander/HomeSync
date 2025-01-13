@@ -80,7 +80,9 @@ else
             }
             family = Account.Family;
             Account.ProfilePhoto = "images/profile/Default.jpg";
+            
             ReceivedMessage = await hub.HubConnection.InvokeAsync<string>("CreateAccount", Account, family);
+
             Navigation.NavigateTo("/");
         }
         else

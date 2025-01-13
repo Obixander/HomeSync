@@ -11,18 +11,21 @@ namespace Entities
         private ICollection<Activity>? activities;
         private int? familyId;  // Foreign key to Family (nullable)
         private Family? family; // Navigation property
+        private List<Role> roles;
         public User()
         {
-            
+            UserRoles = new List<UserRole>();
         }
         public User(int userId)
         {
             UserId = userId;
+            UserRoles = new List<UserRole>();
         }
         public User(string userName, string password)
         {
             UserName = userName;
             Password = password;
+            UserRoles = new List<UserRole>();
         }
 
         public int UserId
@@ -54,6 +57,7 @@ namespace Entities
         public int? FamilyId { get => familyId; set => familyId = value; }
         [JsonIgnore]
         public Family? Family { get => family; set => family = value; }
+        public virtual ICollection<UserRole> UserRoles { get; set; }
 
         public override bool Equals(object obj)
         {

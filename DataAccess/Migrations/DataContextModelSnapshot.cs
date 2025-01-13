@@ -145,6 +145,26 @@ namespace DataAccess.Migrations
                     b.ToTable("Families");
                 });
 
+            modelBuilder.Entity("Entities.Role", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
+
+                    b.Property<int>("AuthLevel")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RoleId");
+
+                    b.ToTable("Roles");
+                });
+
             modelBuilder.Entity("Entities.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -173,6 +193,29 @@ namespace DataAccess.Migrations
                     b.HasIndex("FamilyId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Entities.UserRole", b =>
+                {
+                    b.Property<int>("UserRoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserRoleId"));
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserRoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("ActivityUser", b =>
@@ -228,6 +271,25 @@ namespace DataAccess.Migrations
                     b.Navigation("Family");
                 });
 
+            modelBuilder.Entity("Entities.UserRole", b =>
+                {
+                    b.HasOne("Entities.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Entities.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Entities.CustomList", b =>
                 {
                     b.Navigation("Items");
@@ -240,6 +302,16 @@ namespace DataAccess.Migrations
                     b.Navigation("CustomLists");
 
                     b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("Entities.Role", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("Entities.User", b =>
+                {
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

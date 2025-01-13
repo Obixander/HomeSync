@@ -14,6 +14,8 @@ namespace DataAccess
         public DbSet<CustomList> CustomLists { get; set; } = null;
         public DbSet<CustomListItem> CustomListItems { get; set; } = null;
         public DbSet<Family> Families { get; set; } = null;
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Activity>()
@@ -21,6 +23,19 @@ namespace DataAccess
                 .WithMany(u => u.Activities);
 
             modelBuilder.Entity<User>().HasMany(u => u.Activities).WithMany(a => a.AssignedMembers);
+
+            modelBuilder.Entity<UserRole>()
+            .HasKey(ur => ur.UserRoleId);  // Specify primary key
+
+            modelBuilder.Entity<UserRole>()
+                .HasOne(ur => ur.User)
+                .WithMany(u => u.UserRoles)
+                .HasForeignKey(ur => ur.UserId);
+
+            modelBuilder.Entity<UserRole>()
+                .HasOne(ur => ur.Role)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.RoleId);
 
             modelBuilder.Entity<CustomList>()
                  .HasMany(c => c.Items) // CustomList has many CustomListItems

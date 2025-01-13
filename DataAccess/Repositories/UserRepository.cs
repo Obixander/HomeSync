@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,6 +27,10 @@ namespace DataAccess.Repositories
                     }
                     user.FamilyId = await context.Families.Where(u => u.FamilyName == family.FamilyName && u.FamilyPassword == family.FamilyPassword).Select(u => u.FamilyId).FirstOrDefaultAsync();
                     await context.AddAsync(user);
+                    await context.SaveChangesAsync();
+                    user.UserId = await context.Users.Where(u => u.UserName == user.UserName && u.Password == user.Password).Select(i => i.UserId).FirstOrDefaultAsync();
+                    UserRole role = new(user.UserId, 1);
+                    context.UserRoles.Add(role);
                     await context.SaveChangesAsync();
                     return "Succes the user has been created";
                 }

@@ -37,7 +37,15 @@ namespace WebConnection.Hubs
         /// <returns>Returns a string with a message of succes or error</returns>
         public async Task<string> CreateAccount(User user, Family family)
         {
-            return await userRepository.CreateAccount(user, family);
+            try
+            {
+                await userRepository.CreateAccount(user, family);
+                return "Succes";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
 
         /// <summary>
