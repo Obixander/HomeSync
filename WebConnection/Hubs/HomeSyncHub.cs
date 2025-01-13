@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace WebConnection.Hubs
 {
-    public class HomeSyncHub(ICustomListRepository customListRepository, IActivityRepository activityRepository,IFamilyRepository familyRepository, IUserRepository userRepository) : Hub, IHomeSyncHub
+    public class HomeSyncHub(ICustomListRepository customListRepository, IActivityRepository activityRepository, IFamilyRepository familyRepository, IUserRepository userRepository) : Hub, IHomeSyncHub
     {
         /// <summary>
         /// this method is used to add a family to the database
@@ -36,7 +36,7 @@ namespace WebConnection.Hubs
         /// <param name="family">this is used to check if the family the account is trying to join exists</param>
         /// <returns>Returns a string with a message of succes or error</returns>
         public async Task<string> CreateAccount(User user, Family family)
-        { 
+        {
             return await userRepository.CreateAccount(user, family);
         }
 
@@ -62,7 +62,7 @@ namespace WebConnection.Hubs
                 throw;
             }
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -110,7 +110,7 @@ namespace WebConnection.Hubs
         {
             return await familyRepository.GetFamilyMembersBy(FamilyId);
         }
-        public async Task<string> GetAllActivities (int FamilyId)
+        public async Task<string> GetAllActivities(int FamilyId)
         {
             var test = await activityRepository.GetAllBy(FamilyId); //this should return the activities for that familyid to the caller
             string Dto = JsonConvert.SerializeObject(test, new JsonSerializerSettings
@@ -119,15 +119,15 @@ namespace WebConnection.Hubs
             });
             return Dto;
         }
-        public async Task SaveActivity(string familyId, Entities.Activity activity) //This method should in theory add the newly made activity to the database and then send to all 
+        public async Task SaveActivity(string familyId, Entities.Activity activity)
         {
             await activityRepository.SaveActivity(activity);
-            
+
             string Dto = JsonConvert.SerializeObject(activity, new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
-            await Clients.Group(familyId).SendAsync("ActivityAdded", Dto); 
+            await Clients.Group(familyId).SendAsync("ActivityAdded", Dto);
         }
         public async Task UpdateActivity(string familyId, Entities.Activity activity)
         {
@@ -172,9 +172,21 @@ namespace WebConnection.Hubs
                 await Console.Out.WriteLineAsync(ex.Message);
                 return false;
             }
-            
-        }
 
+        }
+        public async Task<bool> AccountUpdated(User user)
+        {
+            try
+            {
+                await userRepository.Update(user);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+                return false;
+            }
+        }
     }
 }
 

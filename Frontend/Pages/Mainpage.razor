@@ -23,7 +23,7 @@
                     <th><img src="@Token.CurrentAccount.ProfilePhoto" alt="Alternate Text" /></th>
                 </tr>
                 <tr class="TableHeaderContainer">
-                    <th><button><i class="fa-solid fa-gear"></i></button></th>
+                    <th @onclick="ToggleSettingsMenu"><button><i class="fa-solid fa-gear"></i></button></th>
                     <th>Monday</th>
                     <th>Tuesday</th>
                     <th>Wednesday</th>
@@ -164,11 +164,17 @@
     @if (IsEditListVisible)
     {
         <CreateListModal CustomList="@SelectedList" CloseModal="ToggleListUpdate"></CreateListModal>
-
     }
+    @if (IsSettingsVisible)
+    {
+        <Settings family="@family" CloseModal="ToggleSettingsMenu"></Settings>
+    }
+
+
 }
 
 @code {
+    private bool IsSettingsVisible = false;
     private bool IsEditListVisible = false;
     private bool isCreateModalVisible = false;
     private bool isModalVisible = false;
@@ -301,6 +307,13 @@
                 StateHasChanged();
             }
         }
+    }
+
+
+
+    private void ToggleSettingsMenu()
+    {
+        IsSettingsVisible = !IsSettingsVisible;
     }
 
     /// <summary>

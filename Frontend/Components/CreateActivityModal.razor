@@ -20,7 +20,11 @@
                         <ul class="dropdown-menu">
                             @foreach (var member in FamilyMembers)
                             {
-                                <li @onclick="() => OnItemSelected(member)" class="@(SelectedItems.Contains(member) ? "selected" : "")">@member.UserName</li>
+                                <div class="dropdown-menu-item">
+                                    <img src="@member.ProfilePhoto"/>
+                                    <li @onclick="() => OnItemSelected(member)" class="@(SelectedItems.Contains(member) ? "selected" : "")">@member.UserName</li>
+
+                                </div>
                             }
                         </ul>
                     }

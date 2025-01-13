@@ -1,0 +1,92 @@
+﻿@using Entities
+@using Frontend.Components
+@using Microsoft.AspNetCore.SignalR.Client
+@using Services
+@using Frontend.Data
+@inject SignalRService hub
+@inject SessionToken Token
+<div id="Settings-Menu-Body">
+    
+    @* Settings Header *@
+    <div id="Settings-Menu-Header">
+        <div>
+            <h1>Settings</h1>
+        </div>
+        <i class="fa-solid fa-arrow-right" @onclick="Back"></i>
+    </div>
+    @* Settings Header *@
+
+    @* Settings Body *@
+    <div id="Settings-Menu-Container">
+
+        <div class="Settings-Menu-Section">
+            <h3>Roles</h3>
+            <hr />
+            @foreach (var member in family.Members)
+            { //TODO: Add a dropdown here with the roles selection
+                <div class="Settings-Menu-Item-Container">
+                    <p>@member.UserName</p>
+                    @* Here *@
+                </div>
+            }
+        </div>
+
+        <div class="Settings-Menu-Section">
+            <h3>Profile Image</h3>
+            <hr />
+            <p>Click on a Image to set your profile image</p>
+            <div id="Settings-Menu-Image-Container">
+                @foreach(var image in images)
+                {
+                    if (image == Token.CurrentAccount.ProfilePhoto)
+                    {
+                        <img id="CurrentImage" src="@image" @onclick="() => ImageClicked(image)" />
+
+                    }
+                    else
+                    {
+                        <img src="@image" @onclick="() => ImageClicked(image)" />
+                    }
+                }
+            </div>
+        </div>
+        
+    </div>
+    @* Settings Body *@
+
+</div>
+@code {
+    [Parameter]
+    public Family family { get; set; }
+    [Parameter]
+    public EventCallback CloseModal { get; set; }
+    private List<string> images = new();
+
+    protected override void OnInitialized()
+    {
+        images.Add("/images/profile/Crab.jpg");
+        images.Add("/images/profile/Dog.jpg");
+        images.Add("/images/profile/Penguin.jpg");
+
+        base.OnInitialized();
+    }
+
+    private void Back()
+    {
+        CloseModal.InvokeAsync(null);
+    }
+
+    private async void ImageClicked(string imageUrl)
+    {
+        Token.CurrentAccount.ProfilePhoto = imageUrl;
+        var temp = await hub.HubConnection.InvokeAsync<bool>("AccountUpdated", Token.CurrentAccount);
+        if (temp)
+        {
+            Console.WriteLine("Profile Image Updated");
+        }
+        else
+        {
+            Console.WriteLine("Profile Image Update Failed");
+        }
+    }
+}

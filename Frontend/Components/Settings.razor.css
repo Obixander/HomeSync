@@ -1,0 +1,59 @@
+﻿#Settings-Menu-Body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: white;
+    z-index: 99999;
+    height: 100%;
+    width: 100%;
+}
+#Settings-Menu-Header {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    height: 4rem;
+    align-items: center;
+
+}
+    #Settings-Menu-Header i {
+        position: absolute;
+        right: 0.3rem;
+        top: 0.3rem;
+        font-size: 35px;
+        cursor: pointer;
+    }
+    #Settings-Menu-Header i:hover {
+        opacity: 0.7;
+    }
+#Settings-Menu-Container {
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+.Settings-Menu-Section {
+    width: 45%;
+}
+.Settings-Menu-Section h3 {
+    text-align:center;
+}
+
+#Settings-Menu-Image-Container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#Settings-Menu-Image-Container img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+#Settings-Menu-Image-Container img:hover {
+    cursor: pointer;
+    opacity: 0.7;
+}
+#CurrentImage {
+    border: 3px solid black;
+}
