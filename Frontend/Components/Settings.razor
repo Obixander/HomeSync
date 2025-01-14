@@ -32,7 +32,10 @@
                         <select class="form-select" @onchange="(e) => RoleChanged(member, e)">
                             @foreach (var role in roles)
                             {
-                                <option value="@role.RoleName">@role.RoleName</option>
+                                <option value="@role.RoleName"
+                                        selected="@IsRoleSelected(member, role)">
+                                    @role.RoleName
+                                </option>
                             }
                         </select>
                     </div>
@@ -82,6 +85,23 @@
 
 
         base.OnInitialized();
+    }
+
+    private bool IsRoleSelected(User member, Role role)
+    { //TODO: Change this to some better at some point
+      //if Role == "Parent" meaning Member.UserRoles.First().RoleId == 1 is true
+        switch (role.RoleName)
+        {
+            case "Parent":
+                return member.UserRoles.First().RoleId == 1;
+            case "Teenager":
+                return member.UserRoles.First().RoleId == 3;
+            case "Child":
+                return member.UserRoles.First().RoleId == 4;
+            default:
+                return false;
+
+        }
     }
 
     private void RoleChanged(User member, ChangeEventArgs e)

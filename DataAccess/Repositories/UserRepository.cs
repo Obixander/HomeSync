@@ -23,6 +23,7 @@ namespace DataAccess.Repositories
             }
             int temp = context.Roles.Where(u => u.RoleName == newRole.RoleName).Select(r => r.RoleId).First();
             Member.UserRoles.First().RoleId = temp;
+            context.Entry(Member).State = EntityState.Modified;
             await context.SaveChangesAsync();
         }
         public async Task<string> CreateAccount(User user, Family family)
