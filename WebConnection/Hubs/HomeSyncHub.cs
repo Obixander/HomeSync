@@ -11,6 +11,15 @@ namespace WebConnection.Hubs
 {
     public class HomeSyncHub(ICustomListRepository customListRepository, IActivityRepository activityRepository, IFamilyRepository familyRepository, IUserRepository userRepository) : Hub, IHomeSyncHub
     {
+
+
+
+
+        public async Task UpdateUserRole(User Member, Role newRole)
+        {
+           await userRepository.UpdateRole(Member, newRole);
+        }
+
         /// <summary>
         /// this method is used to add a family to the database
         /// </summary>
@@ -114,9 +123,12 @@ namespace WebConnection.Hubs
                 throw;
             }
         }
-        public async Task<Family> GetFamily(int FamilyId)
+        public async Task<string> GetFamily(int FamilyId)
         {
-            return await familyRepository.GetFamilyMembersBy(FamilyId);
+            return JsonConvert.SerializeObject(await familyRepository.GetFamilyMembersBy(FamilyId), new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
         }
         public async Task<string> GetAllActivities(int FamilyId)
         {

@@ -13,7 +13,8 @@ namespace DataAccess.Repositories
     {
         public async Task<Family> GetFamilyMembersBy(int FamilyId)
         {
-            return await context.Families.AsNoTracking().Include(e => e.Members).SingleOrDefaultAsync(j => j.FamilyId == FamilyId) ?? throw new NullReferenceException();
+            Family family = await context.Families.AsNoTracking().Include(e => e.Members).ThenInclude(m =>m.UserRoles).ThenInclude(ur => ur.Role).SingleOrDefaultAsync(j => j.FamilyId == FamilyId) ?? throw new NullReferenceException();
+            return family;
         }
     }
 }

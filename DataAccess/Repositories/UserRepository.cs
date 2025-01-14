@@ -14,6 +14,17 @@ namespace DataAccess.Repositories
 {
     public class UserRepository(DataContext context) : GenericRepository<User>(context), IUserRepository
     {
+
+        public async Task UpdateRole(User Member, Role newRole)
+        {
+            if (context.Entry(Member).State == EntityState.Detached)
+            {
+                context.Users.Attach(Member);
+            }
+            int temp = context.Roles.Where(u => u.RoleName == newRole.RoleName).Select(r => r.RoleId).First();
+            Member.UserRoles.First().RoleId = temp;
+            await context.SaveChangesAsync();
+        }
         public async Task<string> CreateAccount(User user, Family family)
         {
             try

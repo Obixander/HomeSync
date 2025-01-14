@@ -16,6 +16,11 @@ namespace Entities
         {
             
         }
+        public Role(string roleName, int? authlvel)
+        {
+            RoleName = roleName;
+            AuthLevel = authlvel ?? 0;
+        }
 
         public int RoleId { get => roleId; set => roleId = value; }
         public string RoleName { get => roleName; set => roleName = value; }

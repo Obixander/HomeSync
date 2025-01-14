@@ -217,7 +217,7 @@
 
             string temp = await hub.HubConnection.InvokeAsync<string>("GetAllActivities", Token.CurrentAccount.FamilyId);
             activities = JsonConvert.DeserializeObject<List<Activity>>(temp) ?? throw new ArgumentNullException();
-            family = await hub.HubConnection.InvokeAsync<Family>("GetFamily", Token.CurrentAccount.FamilyId) ?? throw new ArgumentNullException();
+            family = JsonConvert.DeserializeObject<Family>(await hub.HubConnection.InvokeAsync<string>("GetFamily", Token.CurrentAccount.FamilyId)) ?? throw new ArgumentNullException();
 
             temp = await hub.HubConnection.InvokeAsync<string>("GetAllLists", Token.CurrentAccount.FamilyId);
             customLists = JsonConvert.DeserializeObject<List<CustomList>>(temp) ?? throw new ArgumentNullException();
