@@ -18,7 +18,15 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th><button class="TableButton" @onclick="() => CreateActivity()">Add Activity</button></th>
+                    <th>
+                        @if (Token.CurrentAccount.UserId != 0)
+                        {
+                            @if (Token.CurrentAccount.UserRoles.First().Role.AuthLevel > 1)
+                            {
+                                <button class="TableButton" @onclick="() => CreateActivity()">Add Activity</button>
+                            }
+                        }
+                    </th>
                     <th colspan="6"><h1>Week: @WeekNumber</h1></th>
                     <th><img src="@Token.CurrentAccount.ProfilePhoto" alt="Alternate Text" /></th>
                 </tr>
@@ -103,24 +111,30 @@
                 }
             </tbody>
         </table>
-        
+
         <div id="ListSectionContainer">
             <div class="ListSectionHeader">
                 <div>
                     <h2>Create List</h2>
                 </div>
                 <div>
-                    <i class="fa-solid fa-plus" @onclick="() =>ToggleListCreation()"></i>
+                    @if (Token.CurrentAccount.UserId != 0)
+                    {
+                        @if (Token.CurrentAccount.UserRoles.First().Role.AuthLevel > 1)
+                        {
+                            <i class="fa-solid fa-plus" @onclick="() =>ToggleListCreation()"></i>
+                        }
+                    }
                 </div>
             </div>
-            
-        <section class="ListContainer">
+
+            <section class="ListContainer">
                 @{
                     customLists = customLists.OrderBy(list => list.StartDate).ToList();
 
                 }
                 @foreach (var list in customLists)
-                { 
+                {
                     <div class="CustomList">
                         <div>
                             <h3>@list.Name</h3>
@@ -144,7 +158,7 @@
                         }
                     </div>
                 }
-        </section>
+            </section>
         </div>
 
     </div>
@@ -225,6 +239,24 @@
             Token.CurrentAccount.FamilyId = family.FamilyId;
             Token.CurrentAccount.Family = family;
 
+            hub.HubConnection.On<string>("UserUpdated", async Event =>
+            {
+                var temp = JsonConvert.DeserializeObject<User>(Event);
+                foreach (var member in family.Members)
+                {
+                    if (temp.UserId == member.UserId)
+                    {
+                        family.Members.Remove(member);
+                        family.Members.Add(temp);
+                        break;
+                    }
+                }
+                if (Token.CurrentAccount.UserId == temp.UserId)
+                {
+                    Token.CurrentAccount = temp;
+                }
+                await InvokeAsync(StateHasChanged);
+            });
 
             hub.HubConnection.On<string>("ListDeleted", async Event =>
            {

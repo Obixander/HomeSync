@@ -161,9 +161,9 @@
         await CloseModal.InvokeAsync(null);
     }
 
-    private void ExitModal()
+    private async void ExitModal()
     {
-            
+        await CloseModal.InvokeAsync(null);
     }
 
     private void Back()

@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using Services
 @using Services.Interfaces
+@using Newtonsoft.Json
 
 @inject NavigationManager Navigation
 @inject SignalRService hub 
@@ -65,8 +66,8 @@
             {
                 try
                 {
-                    Account = await hub.HubConnection.InvokeAsync<User>("Login", user);
-
+                    string temp = await hub.HubConnection.InvokeAsync<string>("Login", user);
+                    Account = JsonConvert.DeserializeObject<User>(temp) ?? throw new ArgumentNullException();
                     if (Account.UserId > 0)
                     {
                         Token.CurrentAccount = Account;

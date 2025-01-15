@@ -58,7 +58,21 @@
     border: 3px solid black;
 }
 
-#Settings-Menu-Downdown-Container {
+#Settings-Menu-Dropdown-Container {
     display: flex;
     align-items: center;
+}
+.Settings-Menu-Item-Container {
+    margin-bottom: 1rem;
+}
+
+.Settings-Menu-Item-Container p {
+    margin-bottom: 0.5rem;
+    padding: 0;
+}
+
+#Settings-Menu-ViewRole {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
 }

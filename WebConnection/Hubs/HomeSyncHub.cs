@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Services.Interfaces;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace WebConnection.Hubs
@@ -17,7 +18,12 @@ namespace WebConnection.Hubs
 
         public async Task UpdateUserRole(User Member, Role newRole)
         {
-           await userRepository.UpdateRole(Member, newRole);
+            var temp = await userRepository.UpdateRole(Member, newRole);
+            string Dto = JsonConvert.SerializeObject(temp, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+            await Clients.Group(Member.FamilyId.ToString()).SendAsync("UserUpdated", Dto);
         }
 
         /// <summary>
@@ -176,9 +182,12 @@ namespace WebConnection.Hubs
                 throw;
             }
         }
-        public async Task<User> Login(User user)
+        public async Task<string> Login(User user)
         {
-            return await userRepository.Login(user);
+            return JsonConvert.SerializeObject(await userRepository.Login(user), new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
         }
         public async Task<bool> Register(User user)
         {

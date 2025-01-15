@@ -5,13 +5,14 @@ namespace Entities
     public class User
     {
         private int userId;
+
         private string userName;
         private string password;
         private string profilePhoto;
         private ICollection<Activity>? activities;
         private int? familyId;  // Foreign key to Family (nullable)
         private Family? family; // Navigation property
-        private List<Role> roles;
+        private List<Role> roles; //maybe does something idk anymore
         public User()
         {
             UserRoles = new List<UserRole>();

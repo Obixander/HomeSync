@@ -18,7 +18,10 @@
                     }
                 </div>
                 <div class="ActiveMemberDeleteContainer">
-                    <i @onclick="() => DeleteActivity()" class="fa-solid fa-trash"></i>
+                    @if (token.CurrentAccount.UserRoles.First().Role.AuthLevel > 2)
+                    {
+                        <i @onclick="() => DeleteActivity()" class="fa-solid fa-trash"></i>
+                    }                
                 </div>
             </div>
             <div class="MainBodyContainer">
@@ -92,7 +95,11 @@
                     </div>
                 </div>
                 <div class="ActiveMemberDeleteContainer">
-                    <i class="fa-solid fa-trash"></i>
+                    @*TODO: implement this delete button at some point*@
+                    @if (token.CurrentAccount.UserRoles.First().Role.AuthLevel > 2)
+                    {
+                        <i class="fa-solid fa-trash"></i>
+                    }
                 </div>
             </div>
             <div class="MainBodyContainer">

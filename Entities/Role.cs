@@ -11,7 +11,7 @@ namespace Entities
         private int roleId;
         private string roleName;
         private int authLevel;
-        private List<User> users;
+        private List<User> users; 
         public Role()
         {
             

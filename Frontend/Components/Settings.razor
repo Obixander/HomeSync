@@ -27,18 +27,30 @@
             @foreach (var member in family.Members)
             { 
                 <div class="Settings-Menu-Item-Container">
-                    <p>@member.UserName</p>
-                    <div id="Settings-Menu-Downdown-Container">
-                        <select class="form-select" @onchange="(e) => RoleChanged(member, e)">
-                            @foreach (var role in roles)
-                            {
-                                <option value="@role.RoleName"
-                                        selected="@IsRoleSelected(member, role)">
-                                    @role.RoleName
-                                </option>
-                            }
-                        </select>
-                    </div>
+                    
+                    @if (Token.CurrentAccount.UserRoles.First().Role.AuthLevel == 3) //TODO: FIX later please ;-; 
+                    {
+                        <p>@member.UserName</p>
+                        <div id="Settings-Menu-Dropdown-Container">
+                            <select class="form-select" @onchange="(e) => RoleChanged(member, e)">
+                                @foreach (var role in roles)
+                                {
+                                    <option value="@role.RoleName"
+                                            selected="@IsRoleSelected(member, role)">
+                                        @role.RoleName
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="Settings-Menu-ViewRole">
+                            <p>@member.UserName</p>
+                            <p> - </p>
+                            <p>@member.UserRoles.First().Role.RoleName</p>
+                        </div>
+                    }
                 </div>
             }
         </div>
@@ -108,9 +120,8 @@
     {
 
         var selectedRoleName = e.Value?.ToString();
-        Console.WriteLine(selectedRoleName);
         var selectedRole = roles.First(x => x.RoleName == selectedRoleName);
-        Console.WriteLine(selectedRole);
+        member.FamilyId = family.FamilyId;
         hub.HubConnection.InvokeAsync("UpdateUserRole", member, selectedRole);
     }
 

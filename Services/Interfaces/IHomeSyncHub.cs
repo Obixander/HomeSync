@@ -9,6 +9,6 @@ namespace Services.Interfaces
 {
     public interface IHomeSyncHub
     {
-        Task<User> Login(User user);
+        Task<string> Login(User user);
     }
 }

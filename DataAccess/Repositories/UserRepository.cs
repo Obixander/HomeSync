@@ -15,7 +15,7 @@ namespace DataAccess.Repositories
     public class UserRepository(DataContext context) : GenericRepository<User>(context), IUserRepository
     {
 
-        public async Task UpdateRole(User Member, Role newRole)
+        public async Task<User> UpdateRole(User Member, Role newRole)
         {
             if (context.Entry(Member).State == EntityState.Detached)
             {
@@ -25,6 +25,7 @@ namespace DataAccess.Repositories
             Member.UserRoles.First().RoleId = temp;
             context.Entry(Member).State = EntityState.Modified;
             await context.SaveChangesAsync();
+            return Member;
         }
         public async Task<string> CreateAccount(User user, Family family)
         {
@@ -60,8 +61,8 @@ namespace DataAccess.Repositories
             {
                 if (await context.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName && x.Password == user.Password) != null)
                 {
-                    //this findasync dont work fix after break
-                    return await context.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName && x.Password == user.Password) ?? throw new NullReferenceException("if this happends something has gone very very wrong :C");
+                    return await context.Users.Where(x => x.UserName == user.UserName && x.Password == user.Password).Include(u => u.UserRoles).ThenInclude(ur => ur.Role).FirstOrDefaultAsync();
+                    //return await context.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName && x.Password == user.Password) ?? throw new NullReferenceException("if this happends something has gone very very wrong :C");
                 }
                 throw new NullReferenceException();
             }
