@@ -4,6 +4,9 @@
 TableHeaderContainer
 */
 
+* {
+    font-family: 'Segoe UI';
+}
 .table {
     width: 70% !important;
 }
@@ -24,21 +27,6 @@ td {
     height: 60px;
     padding-top: 0rem;
 }
-
-/*.activity-card {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    z-index: 1;
-}
-
-    .activity-card + .activity-card {
-        z-index: 2;
-    }*/
 
 td {
     position: relative;

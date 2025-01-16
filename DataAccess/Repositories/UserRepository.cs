@@ -14,7 +14,6 @@ namespace DataAccess.Repositories
 {
     public class UserRepository(DataContext context) : GenericRepository<User>(context), IUserRepository
     {
-
         public async Task<User> UpdateRole(User Member, Role newRole)
         {
             try

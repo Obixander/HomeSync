@@ -194,11 +194,13 @@
         }
     }
 
-    private void DeleteItem(CustomListItem item)
+    private async void DeleteItem(CustomListItem item)
     {
         if (CustomList.Items != null)
         {
+            await hub.RemoveListItem(CustomList.FamilyId, item);
             CustomList.Items.Remove(item);
+            await InvokeAsync(StateHasChanged);
         }
     }
 

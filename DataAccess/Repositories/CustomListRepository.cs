@@ -11,6 +11,34 @@ namespace DataAccess.Repositories
 {
     public class CustomListRepository(DataContext context) : GenericRepository<CustomList>(context), ICustomListRepository
     {
+        public async Task RemoveItem(CustomListItem item)
+        {
+            try
+            {
+                context.CustomListItems.Attach(item);
+                context.CustomListItems.Remove(item);
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public async Task UpdateList(CustomList list)
+        {
+            try
+            {
+                context.Attach(list);
+                context.Entry(list).State = EntityState.Modified;
+                
+                await context.SaveChangesAsync();
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
         public async Task SaveList(CustomList list)
         {
             try

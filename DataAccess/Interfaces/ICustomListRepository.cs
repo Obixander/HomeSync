@@ -10,6 +10,8 @@ namespace DataAccess.Repositories
 {
     public interface ICustomListRepository : IGenericRepository<CustomList>
     {
+        Task RemoveItem(CustomListItem item);
+        Task UpdateList(CustomList list);
         Task SaveList(CustomList list);
         Task<List<CustomList>> GetAllBy(int familyId);
         Task DeleteList(CustomList list);

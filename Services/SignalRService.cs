@@ -14,6 +14,20 @@ namespace Services
             _hubConnection = new HubConnectionBuilder().WithUrl(new Uri("https://localhost:7139/homesynchub")).WithAutomaticReconnect().Build(); 
         }
 
+
+
+        public async Task RemoveListItem(int FamilyId, CustomListItem item)
+        {
+            try
+            {
+                await HubConnection.InvokeAsync("RemoveListItem", FamilyId, item);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         /// <summary>
         /// This method is used to delete a list from the database
         /// </summary>

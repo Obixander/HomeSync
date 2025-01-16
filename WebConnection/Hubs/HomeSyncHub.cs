@@ -15,7 +15,10 @@ namespace WebConnection.Hubs
 
 
 
-
+        public async Task RemoveListItem(int FamilyId, CustomListItem item)
+        {
+            await customListRepository.RemoveItem(item);
+        }
         public async Task UpdateUserRole(User Member, Role newRole)
         {
             var temp = await userRepository.UpdateRole(Member, newRole);
@@ -94,7 +97,7 @@ namespace WebConnection.Hubs
         /// <returns></returns>
         public async Task UpdateList(int FamilyId, CustomList list)
         {
-            await customListRepository.Update(list);
+            await customListRepository.UpdateList(list);
             string Dto = JsonConvert.SerializeObject(list, new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
