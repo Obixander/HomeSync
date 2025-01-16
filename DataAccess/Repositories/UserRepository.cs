@@ -17,15 +17,22 @@ namespace DataAccess.Repositories
 
         public async Task<User> UpdateRole(User Member, Role newRole)
         {
-            if (context.Entry(Member).State == EntityState.Detached)
+            try
             {
-                context.Users.Attach(Member);
+                if (context.Entry(Member).State == EntityState.Detached)
+                {
+                    context.Users.Attach(Member);
+                }
+                int temp = context.Roles.Where(u => u.RoleName == newRole.RoleName).Select(r => r.RoleId).First();
+                Member.UserRoles.First().RoleId = temp;
+                context.Entry(Member).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+                return Member;
             }
-            int temp = context.Roles.Where(u => u.RoleName == newRole.RoleName).Select(r => r.RoleId).First();
-            Member.UserRoles.First().RoleId = temp;
-            context.Entry(Member).State = EntityState.Modified;
-            await context.SaveChangesAsync();
-            return Member;
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
         public async Task<string> CreateAccount(User user, Family family)
         {
@@ -61,7 +68,7 @@ namespace DataAccess.Repositories
             {
                 if (await context.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName && x.Password == user.Password) != null)
                 {
-                    return await context.Users.Where(x => x.UserName == user.UserName && x.Password == user.Password).Include(u => u.UserRoles).ThenInclude(ur => ur.Role).FirstOrDefaultAsync();
+                    return await context.Users.Where(x => x.UserName == user.UserName && x.Password == user.Password).Include(u => u.UserRoles).ThenInclude(ur => ur.Role).Include(f => f.Family).ThenInclude(fa => fa.Members).FirstOrDefaultAsync();
                     //return await context.Users.FirstOrDefaultAsync(x => x.UserName == user.UserName && x.Password == user.Password) ?? throw new NullReferenceException("if this happends something has gone very very wrong :C");
                 }
                 throw new NullReferenceException();

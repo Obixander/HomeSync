@@ -88,7 +88,10 @@
                             <ul class="AddMember">
                                 @foreach (var member in token.CurrentAccount.Family.Members ?? throw new ArgumentNullException())
                                 {
-                                    <li @onclick="() => OnItemSelected(member)" class="@(SelectedItems.Contains(member) ? "selected" : "")">@member.UserName</li>
+                                    <li @onclick="() => OnItemSelected(member)" class="@(SelectedItems.Contains(member) ? "selected" : "")">
+                                        <img src="@member.ProfilePhoto" />
+                                        @member.UserName
+                                        </li>
                                 }
                             </ul>
                         }

@@ -22,13 +22,12 @@
         <div class="Settings-Menu-Section">
             <h3>Roles</h3>
             <hr />
-
-            
-            @foreach (var member in family.Members)
+           
+            @foreach (var member in family.Members.OrderBy(x => x.UserRoles.FirstOrDefault().Role.AuthLevel))
             { 
                 <div class="Settings-Menu-Item-Container">
                     
-                    @if (Token.CurrentAccount.UserRoles.First().Role.AuthLevel == 3) //TODO: FIX later please ;-; 
+                    @if (Token.CurrentAccount.UserRoles.First().Role.AuthLevel == 3) 
                     {
                         <p>@member.UserName</p>
                         <div id="Settings-Menu-Dropdown-Container">
@@ -94,14 +93,11 @@
         roles.Add(new("Teenager", 2));
         roles.Add(new("Child", 1));
 
-
-
         base.OnInitialized();
     }
 
     private bool IsRoleSelected(User member, Role role)
     { //TODO: Change this to some better at some point
-      //if Role == "Parent" meaning Member.UserRoles.First().RoleId == 1 is true
         switch (role.RoleName)
         {
             case "Parent":

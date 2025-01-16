@@ -131,12 +131,14 @@
     width: 80%;
     margin: 0 auto;
     text-align: center;
+    height: 60%;
 }
     .DescriptionRowContainer p {
         width: 100%;
         height: 15rem;
         padding: 5px;
         border: 1px solid black;
+        height: 80%;
     }
 
 /*Editing Classes*/
@@ -180,12 +182,20 @@
     background-color: white;
     padding: 10px 5px;
     list-style-type: none;
+    width: 10rem;
 }
+    .AddMember img {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+    }
 
-.AddMember li {
-    width: 100%;
-    padding: 5px;
-}
+    .AddMember li {
+        width: 100%;
+        padding: 5px 0px;
+        display: flex;
+        align-items: center;
+    }
     .AddMember li:hover {
         background-color: lightblue;
         cursor: pointer;

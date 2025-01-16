@@ -208,6 +208,11 @@ namespace WebConnection.Hubs
             try
             {
                 await userRepository.Update(user);
+                string Dto = JsonConvert.SerializeObject(user, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                });
+                await Clients.Group(user.FamilyId.ToString()).SendAsync("UserUpdated", Dto);
                 return true;
             }
             catch (Exception ex)

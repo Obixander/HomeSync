@@ -28,7 +28,7 @@
                         }
                     </th>
                     <th colspan="6"><h1>Week: @WeekNumber</h1></th>
-                    <th><img src="@Token.CurrentAccount.ProfilePhoto" alt="Alternate Text" /></th>
+                    <th id="ProfileImageContainer" ><img src="@Token.CurrentAccount.ProfilePhoto" alt="Alternate Text" /></th>
                 </tr>
                 <tr class="TableHeaderContainer">
                     <th @onclick="ToggleSettingsMenu"><button><i class="fa-solid fa-gear"></i></button></th>
@@ -141,9 +141,9 @@
                             <i class="fa-solid fa-pen" @onclick="() =>EditList(list)"></i>
                         </div>
                         <div>
-                            @list.StartDate
+                            @list.StartDate.ToString("MM/d: HH:mm")
                             -
-                            @list.EndDate
+                            @list.EndDate.ToString("MM/d: HH:mm")
                         </div>
                         <hr />
                         @if (list.Items != null)
@@ -253,8 +253,12 @@
                 }
                 if (Token.CurrentAccount.UserId == temp.UserId)
                 {
+                    Console.WriteLine("User Updated");
                     Token.CurrentAccount = temp;
+                    
                 }
+                Console.WriteLine("User should have updated Updated");
+
                 await InvokeAsync(StateHasChanged);
             });
 
@@ -364,8 +368,10 @@
         if (activities != null && activities.Count != 0)
         {
             var tempList = activities.OrderBy(x => x.StartDate.Hour).ToList();
+            var tempList2 = activities.OrderBy(x => x.EndDate.Hour).ToList();
             timeSlots.Clear();
-            for (int i = (tempList[0].StartDate.Hour - 1 > 0) ? tempList[0].StartDate.Hour - 1 : 0; i <= 23; i++)
+            int EndTime = (tempList2[tempList.Count - 1].EndDate.Hour + 1 < 24) ? tempList2[tempList.Count - 1].EndDate.Hour +1 : 23;
+            for (int i = (tempList[0].StartDate.Hour - 1 > 0) ? tempList[0].StartDate.Hour - 1 : 0; i <= EndTime; i++)
             {
                 if (i < 10)
                 {

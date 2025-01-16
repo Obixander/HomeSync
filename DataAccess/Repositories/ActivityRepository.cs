@@ -14,7 +14,6 @@ namespace DataAccess.Repositories
 {
     public class ActivityRepository(DataContext context) : GenericRepository<Activity>(context), IActivityRepository
     {
-        //Add an Delete here after break where the ef context is updated to be able to handle it
         public async Task DeleteActivity(Activity entity)
         {
             try
@@ -22,7 +21,7 @@ namespace DataAccess.Repositories
                 var entry = context.Entry(entity);
                 if (entry.State == EntityState.Detached)
                 {
-                    context.Attach(entity);
+                    context.Attach(entity); //gives ef context for the activity as 
                     context.Remove(entity);
                     await context.SaveChangesAsync();
                 }
@@ -62,12 +61,19 @@ namespace DataAccess.Repositories
         } 
         public async Task<List<Activity>> GetAllBy(int FamilyId)
         {
-            DateTime referenceDate = DateTime.Now; //gets today might used for being able to change what week to get
-            DateTime startOfWeek = referenceDate.AddDays(-(int)referenceDate.DayOfWeek + (int)DayOfWeek.Monday);
-            DateTime endOfWeek = startOfWeek.AddDays(7).AddTicks(-1); // End of Sunday
-            
-            return await context.Activities.Where(x => x.FamilyId == FamilyId && x.StartDate >= startOfWeek.Date && x.EndDate <= endOfWeek.Date).Include(u => u.AssignedMembers).ToListAsync();
-        }
+            try
+            {
+                DateTime referenceDate = DateTime.Now; //gets today might used for being able to change what week to get
+                DateTime startOfWeek = referenceDate.AddDays(-(int)referenceDate.DayOfWeek + (int)DayOfWeek.Monday);
+                DateTime endOfWeek = startOfWeek.AddDays(7).AddTicks(-1); // End of Sunday
+
+                return await context.Activities.Where(x => x.FamilyId == FamilyId && x.StartDate >= startOfWeek.Date && x.EndDate <= endOfWeek.Date).Include(u => u.AssignedMembers).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+           }
 
         public async Task SaveActivity(Activity Entity)
         {

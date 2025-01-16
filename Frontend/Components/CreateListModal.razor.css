@@ -24,14 +24,14 @@
 }
 
 .Modal {
-    height: 70%;
+    height: 75%;
     position: relative;
     background-color: white;
     padding: 20px;
     border-radius: 10px;
     width: 100%;
     max-width: 1200px;
-    max-height: 720px;
+    max-height: 750px;
     overflow-y: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 100;
@@ -206,8 +206,8 @@ width: 50%;
 #Scrollable {
     display: flex;
     flex-direction: column;
-    height: 250px; /* Set the height for the scrollable container */
-    overflow-y: auto; /* Enable vertical scrolling */
+    height: 200px; 
+    overflow-y: auto; 
     justify-content: normal;
 }
 
