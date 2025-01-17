@@ -6,7 +6,7 @@
 @inject SignalRService hub
 @inject SessionToken Token
 <div id="Settings-Menu-Body">
-    
+
     @* Settings Header *@
     <div id="Settings-Menu-Header">
         <div>
@@ -22,12 +22,15 @@
         <div class="Settings-Menu-Section">
             <h3>Roles</h3>
             <hr />
-           
-            @foreach (var member in family.Members.OrderBy(x => x.UserRoles.FirstOrDefault().Role.AuthLevel))
-            { 
+            @{
+                List<User> temp = family.Members.OrderByDescending(x => x.UserRoles.First().Role.AuthLevel).ToList();
+            }
+
+            @foreach (var member in temp)
+            {
                 <div class="Settings-Menu-Item-Container">
-                    
-                    @if (Token.CurrentAccount.UserRoles.First().Role.AuthLevel == 3) 
+
+                    @if (Token.CurrentAccount.UserRoles.First().Role.AuthLevel == 3)
                     {
                         <p>@member.UserName</p>
                         <div id="Settings-Menu-Dropdown-Container">
@@ -59,7 +62,7 @@
             <hr />
             <p>Click on a Image to set your profile image</p>
             <div id="Settings-Menu-Image-Container">
-                @foreach(var image in images)
+                @foreach (var image in images)
                 {
                     if (image == Token.CurrentAccount.ProfilePhoto)
                     {
@@ -72,7 +75,7 @@
                 }
             </div>
         </div>
-        
+
     </div>
     @* Settings Body *@
 
