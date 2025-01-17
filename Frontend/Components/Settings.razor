@@ -32,18 +32,18 @@
 
                     @if (Token.CurrentAccount.UserRoles.First().Role.AuthLevel == 3)
                     {
-                        <p>@member.UserName</p>
-                        <div id="Settings-Menu-Dropdown-Container">
-                            <select class="form-select" @onchange="(e) => RoleChanged(member, e)">
-                                @foreach (var role in roles)
-                                {
-                                    <option value="@role.RoleName"
-                                            selected="@IsRoleSelected(member, role)">
-                                        @role.RoleName
-                                    </option>
-                                }
-                            </select>
-                        </div>
+                            <p>@member.UserName</p>
+                            <div id="Settings-Menu-Dropdown-Container">
+                                <select class="form-select" @onchange="(e) => RoleChanged(member, e)">
+                                    @foreach (var role in roles)
+                                    {
+                                        <option value="@role.RoleName"
+                                                selected="@IsRoleSelected(member, role)">
+                                            @role.RoleName
+                                        </option>
+                                    }
+                                </select>
+                            </div>
                     }
                     else
                     {
