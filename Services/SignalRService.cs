@@ -11,7 +11,7 @@ namespace Services
         
         public SignalRService()
         {
-            _hubConnection = new HubConnectionBuilder().WithUrl(new Uri("https://localhost:7139/homesynchub")).WithAutomaticReconnect().Build(); 
+            _hubConnection = new HubConnectionBuilder().WithUrl(new Uri("http://localhost:7139/homesynchub")).WithAutomaticReconnect().Build(); 
         }
 
 

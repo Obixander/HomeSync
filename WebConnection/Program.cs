@@ -39,11 +39,15 @@ namespace WebConnection
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
             });
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenAnyIP(7139); // Ensure the app listens on port 7139
+            });
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowBlazorApp", builder =>
                 {
-                    builder.WithOrigins("https://localhost:7144", "https://localhost:7256")
+                    builder.WithOrigins("https://localhost:7144", "https://localhost:7256", "https://localhost:8000", "http://localhost:8000")
                            .AllowAnyHeader()
                            .AllowAnyMethod()
                            .AllowCredentials();
@@ -52,15 +56,12 @@ namespace WebConnection
 
 
             var app = builder.Build();
-
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            app.UseHttpsRedirection();
 
             app.UseAuthorization();
 

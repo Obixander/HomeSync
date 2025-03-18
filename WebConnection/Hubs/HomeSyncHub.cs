@@ -7,14 +7,12 @@ using Newtonsoft.Json;
 using Services.Interfaces;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace WebConnection.Hubs
 {
     public class HomeSyncHub(ICustomListRepository customListRepository, IActivityRepository activityRepository, IFamilyRepository familyRepository, IUserRepository userRepository) : Hub, IHomeSyncHub
     {
-
-
-
         public async Task RemoveListItem(int FamilyId, CustomListItem item)
         {
             await customListRepository.RemoveItem(item);
@@ -185,9 +183,12 @@ namespace WebConnection.Hubs
                 throw;
             }
         }
-        public async Task<string> Login(User user)
+        public async Task<string> Login(string user)
         {
-            return JsonConvert.SerializeObject(await userRepository.Login(user), new JsonSerializerSettings
+            //reaches here
+            Console.WriteLine(user);
+            var temp = JsonConvert.DeserializeObject<User>(user);
+            return JsonConvert.SerializeObject(await userRepository.Login(temp), new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });

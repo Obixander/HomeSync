@@ -1,0 +1,31 @@
+version: '1.0'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile.Frontend # Assuming the first Dockerfile is named Dockerfile.frontend
+    ports:
+      - "8000:8000"  # Frontend served by Nginx on port 80
+    volumes:
+      - ./Frontend/nginx.conf:/etc/nginx/nginx.conf  # Custom Nginx config
+    networks:
+      - app_network
+    depends_on:
+      - backend  # Ensure backend is ready before frontend starts
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./WebConnection/Dockerfile.Backend
+        # Assuming the second Dockerfile is named Dockerfile.backend
+    ports:
+      - "7139:7139"  # Expose API port
+    networks:
+      - app_network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production  # Set environment variable for the API
+
+networks:
+  app_network:
+    driver: bridge

@@ -6,12 +6,13 @@
 @using Services
 @using Services.Interfaces
 @using Newtonsoft.Json
-
+@using Frontend.Components
 @inject NavigationManager Navigation
 @inject SignalRService hub 
 @inject SessionToken Token
 
 <PageTitle>Login Page</PageTitle>
+
 <article class="Container">
 
     <div class="LoginContainer">
@@ -66,8 +67,15 @@
             {
                 try
                 {
-                    string temp = await hub.HubConnection.InvokeAsync<string>("Login", user);
+                    Console.WriteLine($"Trying to login with {user.UserName} and {user.Password}");
+                    //doesn't reach hub if its an user object...
+                    var test = JsonConvert.SerializeObject(user);
+                    Console.WriteLine(test);
+                    string temp = await hub.HubConnection.InvokeAsync<string>("Login", test);
+                    Console.WriteLine(temp);
+                    Console.WriteLine($"Login return value: {temp}");
                     Account = JsonConvert.DeserializeObject<User>(temp) ?? throw new ArgumentNullException();
+                    Console.WriteLine(Account);
                     if (Account.UserId > 0)
                     {
                         Token.CurrentAccount = Account;
